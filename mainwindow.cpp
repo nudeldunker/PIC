@@ -163,27 +163,34 @@ MainWindow::decodeCmd()
     if((m_CmdList[i] & 0x3F00 ) == 0x3C00)
         qDebug()<< "SUBLW" << i;
 
-    if((m_CmdList[i] & 0x00FF ) == 0x0063)
+    if((m_CmdList[i] & 0xFFFF ) == 0x0063)
         qDebug()<< "SLEEP" << i;
 
-    if((m_CmdList[i] & 0x000F ) == 0x0008)
+    if((m_CmdList[i] & 0xFFFF ) == 0x0008)
         qDebug()<< "RETURN" << i;
 
     if((m_CmdList[i] & 0x3C00 ) == 0x3400)
         qDebug()<< "RETURNLW" << i;
 
-    if((m_CmdList[i] & 0x000F ) == 0x0009)
+    if((m_CmdList[i] & 0xFFFF ) == 0x0009)
         qDebug()<< "RETURNFIE" << i;
 
-    if((m_CmdList[i] & 0x3C00 ) == 0x3000)
+    if((m_CmdList[i] & 0x3F00 ) == 0x3000)
         qDebug()<< "MOVLW" << i;
 
-    if((m_CmdList[i] & 0x3F00 ) == 0x3800)
-        qDebug()<< "IORLW" << i;
+    if((m_CmdList[i] & 0x3F00 ) == 0x3100)
+        qDebug()<< "MOVLW" << i;
 
-    if((m_CmdList[i] & 0x000F ) == 0x0008)
-        qDebug()<< "RETURN" << i;
-    }
+    if((m_CmdList[i] & 0x3F00 ) == 0x3200)
+        qDebug()<< "MOVLW" << i;
+
+    if((m_CmdList[i] & 0x3F00 ) == 0x3300)
+        qDebug()<< "MOVLW" << i;
+
+
+    if((m_CmdList[i] & 0x3800 ) == 0x3800)
+        qDebug()<< "IORLW" << i;
+}
 }
 
 void MainWindow::on_pushButton_clicked()
