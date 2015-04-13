@@ -98,6 +98,36 @@ MainWindow::decodeCmd()
 
     if((m_CmdList[i] & 0x3800 ) == 0x2800)
         qDebug()<< "GOTO " << i;
+
+    if((m_CmdList[i] & 0x3F00 ) == 0x3A00)
+        qDebug()<< "XORLW" << i;
+
+    if((m_CmdList[i] & 0x3E00 ) == 0x3C00)
+        qDebug()<< "SUBLW" << i;
+
+    if((m_CmdList[i] & 0x3F00 ) == 0x3C00)
+        qDebug()<< "SUBLW" << i;
+
+    if((m_CmdList[i] & 0x00FF ) == 0x0063)
+        qDebug()<< "SLEEP" << i;
+
+    if((m_CmdList[i] & 0x000F ) == 0x0008)
+        qDebug()<< "RETURN" << i;
+
+    if((m_CmdList[i] & 0x3C00 ) == 0x3400)
+        qDebug()<< "RETURNLW" << i;
+
+    if((m_CmdList[i] & 0x000F ) == 0x0009)
+        qDebug()<< "RETURNFIE" << i;
+
+    if((m_CmdList[i] & 0x3C00 ) == 0x3000)
+        qDebug()<< "MOVLW" << i;
+
+    if((m_CmdList[i] & 0x3F00 ) == 0x3800)
+        qDebug()<< "IORLW" << i;
+
+    if((m_CmdList[i] & 0x000F ) == 0x0008)
+        qDebug()<< "RETURN" << i;
     }
 }
 
