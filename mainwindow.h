@@ -16,8 +16,11 @@ public:
     ~MainWindow();
 
     reset();
+    decodeCmd();
 private slots:
     loadFile();
+    void on_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QList<int> m_CmdList;
