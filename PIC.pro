@@ -7,8 +7,12 @@ FORMS += \
     mainwindow.ui
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    pic.h \
+    regmodel.h
 
 SOURCES += \
     mainwindow.cpp \
-    main.cpp
+    main.cpp \
+    pic.cpp \
+    regmodel.cpp
