@@ -15,10 +15,10 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    reset();
-    decodeCmd();
+   void reset();
+    void decodeCmd();
 private slots:
-    loadFile();
+    void loadFile();
     void on_pushButton_clicked();
 
 private:

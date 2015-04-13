@@ -23,7 +23,7 @@ MainWindow::~MainWindow()
     //BlablaBlub
 }
 
-MainWindow::loadFile()
+void MainWindow::loadFile()
 {
     static bool geladen=false;
 
@@ -63,7 +63,7 @@ MainWindow::loadFile()
 
 }
 
-MainWindow::reset()
+void MainWindow::reset()
 {
     m_CmdList.clear();
     m_FileText.clear();
@@ -75,7 +75,7 @@ MainWindow::reset()
 
 //}
 
-MainWindow::decodeCmd()
+void MainWindow::decodeCmd()
 {
 
 
