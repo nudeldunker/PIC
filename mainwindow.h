@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "pic.h"
 
 namespace Ui {
 class MainWindow;
@@ -16,14 +17,16 @@ public:
     ~MainWindow();
 
    void reset();
-    void decodeCmd();
+   // void decodeCmd();
+
+    PIC *pic;
 private slots:
     void loadFile();
     void on_pushButton_clicked();
 
 private:
     Ui::MainWindow *ui;
-    QList<int> m_CmdList;
+    //QList<int> m_CmdList;
     QList<QString> m_FileText;
 };
 
