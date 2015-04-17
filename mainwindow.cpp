@@ -151,11 +151,6 @@ void MainWindow::reset()
 //     else if(ShrtCmd == 0x2800)
 //         GOTO(k_long);
 
-////
-
-
-
-
 //    if((m_CmdList[i] & 0x3F00 ) == 0x3A00)
 //        qDebug()<< "XORLW" << i;
 
