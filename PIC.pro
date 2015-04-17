@@ -9,10 +9,12 @@ FORMS += \
 HEADERS += \
     mainwindow.h \
     pic.h \
-    regmodel.h
+    regmodel.h \
+    regmodeldlgt.h
 
 SOURCES += \
     mainwindow.cpp \
     main.cpp \
     pic.cpp \
-    regmodel.cpp
+    regmodel.cpp \
+    regmodeldlgt.cpp
