@@ -185,7 +185,7 @@ void PIC::INCFSZ(){
 void PIC::IORWF(){
     qDebug() << "IORWF";
 
-    //Inclusive OR W with f
+    //W = W | f;
     //pc++;
 }
 
