@@ -215,14 +215,14 @@ void PIC::NOP(){
 void PIC::RLF(){
     qDebug() << "RLF";
 
-
+    //pc++;
 
 }
 
 void PIC::RRF(){
     qDebug() << "RRF";
 
-
+    //pc++;
 
 }
 
@@ -250,7 +250,7 @@ void PIC::XORWF(){
 void PIC::BCF(){
     qDebug() << "BCF";
 
-
+    //pc++;
 
 }
 
@@ -258,21 +258,21 @@ void PIC::BCF(){
 void PIC::BSF(){
     qDebug() << "BSF";
 
-
+    //pc++;
 
 }
 
 void PIC::BTFSC(){
     qDebug() << "BTFSC";
 
-
+    //pc++;
 
 }
 
 void PIC::BTFSS(){
     qDebug() << "BTFSS";
 
-
+    //pc++;
 
 }
 
@@ -342,21 +342,21 @@ void PIC::SLEEP(){
 void PIC::RETURN(){
     qDebug() << "RETURN";
 
-
+    //pc++;
 
 }
 
 void PIC::RETURNLW(){
     qDebug() << "RETURNLW";
 
-
+    //pc++;
 
 }
 
 void PIC::RETURNFIE(){
     qDebug() << "RETURNFIE";
 
-
+    //pc++;
 
 }
 
