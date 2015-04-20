@@ -166,27 +166,53 @@ void PIC::IORLW(){qDebug() << "IORLW";}
 
 
 
-//void PIC::CBit(bool set)
-//{
-//    if(set)
-//        this->regModel->reg[STATUS] |= 0x1;
-//    else
-//        this->regModel->reg[STATUS] &= 0xFE;
-//}
+void PIC::CBit(bool set)
+{
+    if(set)
+        this->regModel->reg[STATUS] |= 0x1;
+    else
+        this->regModel->reg[STATUS] &= 0xFE;
+}
 
-//void PIC::DCBit(bool set)
-//{
-//    if(set)
-//        this->regModel->reg[STATUS] |=0x2;
-//    else
-//        this->regModel->reg[STATUS] &= 0xDE;
-//}
+void PIC::DCBit(bool set)
+{
+    if(set)
+        this->regModel->reg[STATUS] |=0x2;
+    else
+        this->regModel->reg[STATUS] &= 0xFD;
+}
 
-//void PIC::ZBit(bool set)
-//{
-//    if(set)
-//        this->regModel->reg[STATUS] |= 0x4;
-//    else
-//        this->regModel->reg[STATUS] &= 0xFB;
+void PIC::ZBit(bool set)
+{
+    if(set)
+        this->regModel->reg[STATUS] |= 0x4;
+    else
+        this->regModel->reg[STATUS] &= 0xFB;
 
-//}
+}
+
+void PIC::PDBit (bool set)
+{
+    if(set)
+        this->regModel->reg[STATUS] |= 0x8;
+    else
+        this->regModel->reg[STATUS] &= 0xF7;
+
+}
+
+void PIC::TOBit (bool set)
+{
+    if(set)
+        this->regModel->reg[STATUS] |= 0x10;
+    else
+        this->regModel->reg[STATUS] &= 0xBF;
+
+}
+
+void PIC::RP0Bit (bool set)
+{
+    if(set)
+        this->regModel->reg[STATUS] |= 0x20;
+    else
+        this->regModel->reg[STATUS] &= 0xCF;
+}
