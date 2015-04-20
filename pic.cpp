@@ -114,6 +114,11 @@ void PIC::decodeCmd()
 
 void PIC::ADDWF(){
     qDebug() << "ADDWF";
+    /*if(d=0){
+    W = W + f;
+    }else{
+    f = W + f;
+    }
 
     int erg= regModel->reg[bank][W]+regModel->reg[bank][f];
 
@@ -147,8 +152,13 @@ void PIC::ADDWF(){
 void PIC::ANDWF(){
     qDebug() << "ANDWF";
 
-    //W= W & f;
-    //pc++;
+    /*if(d=0){
+    W = W & f;
+    }else{
+    f = W & f;
+    }
+
+    pc++; */
 }
 
 void PIC::CLRF(){
@@ -276,6 +286,7 @@ void PIC::XORWF(){
 
 void PIC::BCF(){
     qDebug() << "BCF";
+
 
     //pc++;
 
@@ -430,22 +441,27 @@ void PIC::CBit(bool set)
     if(set)
         this->regModel->reg[bank][STATUS] =regModel->reg[bank][STATUS] | 0x1;
     else
+
         this->regModel->reg[bank][STATUS] = regModel->reg[bank][STATUS] & 0xFE;
 }
 
 void PIC::DCBit(bool set)
 {
     if(set)
+
         this->regModel->reg[bank][STATUS] = regModel->reg[bank][STATUS] | 0x2;
     else
+
         this->regModel->reg[bank][STATUS] = regModel->reg[bank][STATUS] & 0xFD;
 }
 
 void PIC::ZBit(bool set)
 {
     if(set)
+
         this->regModel->reg[bank][STATUS] =regModel->reg[bank][STATUS] | 0x4;
     else
+
         this->regModel->reg[bank][STATUS] = regModel->reg[bank][STATUS] & 0xFB;
 
 }
@@ -453,8 +469,10 @@ void PIC::ZBit(bool set)
 void PIC::PDBit (bool set)
 {
     if(set)
+
         this->regModel->reg[bank][STATUS] = regModel->reg[bank][STATUS] | 0x8;
     else
+
         this->regModel->reg[bank][STATUS] = regModel->reg[bank][STATUS] & 0xF7;
 
 }
@@ -462,8 +480,10 @@ void PIC::PDBit (bool set)
 void PIC::TOBit (bool set)
 {
     if(set)
+
         this->regModel->reg[bank][STATUS] = regModel->reg[bank][STATUS] | 0x10;
     else
+
         this->regModel->reg[bank][STATUS] = regModel->reg[bank][STATUS] & 0xBF;
 
 }
@@ -471,8 +491,10 @@ void PIC::TOBit (bool set)
 void PIC::RP0Bit (bool set)
 {
     if(set)
+
         this->regModel->reg[bank][STATUS]= regModel->reg[bank][STATUS] | 0x20;
     else
+
         this->regModel->reg[bank][STATUS]= regModel->reg[bank][STATUS] & 0xCF;
 }
 
