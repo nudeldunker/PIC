@@ -10,6 +10,8 @@
 #define PORTA 0x05
 #define PORTB 0x06
 
+#define W 1
+
 
 
 #endif // ADRESSEN_H

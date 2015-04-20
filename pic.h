@@ -18,6 +18,8 @@ public:
     int l=0;
     int b=0;
 
+    int bank=0;
+
     //RegModel *regmodel;
     QList<int> m_CmdList;
 

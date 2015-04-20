@@ -115,6 +115,29 @@ void PIC::decodeCmd()
 void PIC::ADDWF(){
     qDebug() << "ADDWF";
 
+    int erg= regModel->reg[bank][W]+regModel->reg[bank][f];
+
+    if(erg > 255)
+    {
+        CBit(true);
+        erg=0;
+    }
+    else CBit(false);
+
+    if(regModel->reg[bank][W]<16 && erg>16)
+    {
+       DCBit(true);
+    }
+    else DCBit(false);
+
+    if(d==0)
+    {
+        regModel->reg[bank][W]=erg;
+    }
+    else regModel->reg[bank][f]=erg;
+
+    PC();
+
     //W = W + f;
     //pc++;
 
@@ -405,55 +428,60 @@ void PIC::IORLW(){
 void PIC::CBit(bool set)
 {
     if(set)
-        this->regModel->reg[STATUS] |= 0x1;
+        this->regModel->reg[bank][STATUS] =regModel->reg[bank][STATUS] | 0x1;
     else
-        this->regModel->reg[STATUS] &= 0xFE;
+        this->regModel->reg[bank][STATUS] = regModel->reg[bank][STATUS] & 0xFE;
 }
 
 void PIC::DCBit(bool set)
 {
     if(set)
-        this->regModel->reg[STATUS] |=0x2;
+        this->regModel->reg[bank][STATUS] = regModel->reg[bank][STATUS] | 0x2;
     else
-        this->regModel->reg[STATUS] &= 0xFD;
+        this->regModel->reg[bank][STATUS] = regModel->reg[bank][STATUS] & 0xFD;
 }
 
 void PIC::ZBit(bool set)
 {
     if(set)
-        this->regModel->reg[STATUS] |= 0x4;
+        this->regModel->reg[bank][STATUS] =regModel->reg[bank][STATUS] | 0x4;
     else
-        this->regModel->reg[STATUS] &= 0xFB;
+        this->regModel->reg[bank][STATUS] = regModel->reg[bank][STATUS] & 0xFB;
 
 }
 
 void PIC::PDBit (bool set)
 {
     if(set)
-        this->regModel->reg[STATUS] |= 0x8;
+        this->regModel->reg[bank][STATUS] = regModel->reg[bank][STATUS] | 0x8;
     else
-        this->regModel->reg[STATUS] &= 0xF7;
+        this->regModel->reg[bank][STATUS] = regModel->reg[bank][STATUS] & 0xF7;
 
 }
 
 void PIC::TOBit (bool set)
 {
     if(set)
-        this->regModel->reg[STATUS] |= 0x10;
+        this->regModel->reg[bank][STATUS] = regModel->reg[bank][STATUS] | 0x10;
     else
-        this->regModel->reg[STATUS] &= 0xBF;
+        this->regModel->reg[bank][STATUS] = regModel->reg[bank][STATUS] & 0xBF;
 
 }
 
 void PIC::RP0Bit (bool set)
 {
     if(set)
-        this->regModel->reg[STATUS] |= 0x20;
+        this->regModel->reg[bank][STATUS]= regModel->reg[bank][STATUS] | 0x20;
     else
-        this->regModel->reg[STATUS] &= 0xCF;
+        this->regModel->reg[bank][STATUS]= regModel->reg[bank][STATUS] & 0xCF;
 }
 
 void PIC::PC()
 {
-
+    regModel->reg[bank][PCL]++;
+    if(regModel->reg[bank][PCL]>255)
+    {
+        regModel->reg[bank][PCL]&= 0xFF;
+        regModel->reg[bank][PCLATH]++;
+    }
 }
