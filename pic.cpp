@@ -100,13 +100,13 @@ void PIC::decodeCmd()
     else if((m_CmdList[i] & 0xFFFF ) == 0x0009)
         RETURNFIE();
     else if((ByteCmd) == 0x3000)
-        MOVLW1();
+        MOVLW();
     else if((ByteCmd) == 0x3100)
-        MOVLW2();
+        MOVLW();
     else if((ByteCmd) == 0x3200)
-        MOVLW3();
+        MOVLW();
     else if((ByteCmd) == 0x3300)
-        MOVLW4();
+        MOVLW();
     else if((ShrtCmd) == 0x3800)
         IORLW();
 }
@@ -389,13 +389,13 @@ void PIC::ADDLW(){
 void PIC::ANDLW(){
     qDebug() << "ANDLW";
 
-    //w = l & W;
+    //W = l & W;
     //pc++;
 }
 
 void PIC::CALL(){
     qDebug() << "CALL";
-    //pc++;
+    PIC::PC();
 
 
 }
@@ -463,29 +463,8 @@ void PIC::RETURNFIE(){
 
 }
 
-void PIC::MOVLW1(){
+void PIC::MOVLW(){
     qDebug() << "MOVLW1";
-
-    //W = l;
-    //pc++;
-}
-
-void PIC::MOVLW2(){
-    qDebug() << "MOVLW2";
-
-    //W = l;
-    //pc++;
-}
-
-void PIC::MOVLW3(){
-    qDebug() << "MOVLW3";
-
-    //W = l;
-    //pc++;
-}
-
-void PIC::MOVLW4(){
-    qDebug() << "MOVLW4";
 
     //W = l;
     //pc++;
@@ -496,7 +475,6 @@ void PIC::IORLW(){
 
     //W = l | W;
     //pc++;
-
 }
 
 
