@@ -113,46 +113,41 @@ void PIC::decodeCmd()
 }
 
 
+
 void PIC::ADDWF(){
     qDebug() << "ADDWF";
     /*if(d=0){
     W = W + f;
     }else{
     f = W + f;
-    }
+    }*/
 
-<<<<<<< Updated upstream
-    int erg= regModel->reg[bank][W]+regModel->reg[bank][f];
 
-    if(erg > 255)
-    {
-        CBit(true);
-        erg=0;
-    }
-    else CBit(false);
+int erg= regModel->reg[bank][W]+regModel->reg[bank][f];
 
-    if(regModel->reg[bank][W]<16 && erg>16)
-    {
-       DCBit(true);
-    }
-    else DCBit(false);
+if(erg > 255)
+{
+    CBit(true);
+    erg=0;
+}
+else CBit(false);
 
-    if(d==0)
-    {
-        regModel->reg[bank][W]=erg;
-    }
-    else regModel->reg[bank][f]=erg;
+if(regModel->reg[bank][W]<16 && erg>16)
+{
+   DCBit(true);
+}
+else DCBit(false);
 
-    PC();
+if(d==0)
+{
+    regModel->reg[bank][W]=erg;
+}
+else regModel->reg[bank][f]=erg;
 
-    //W = W + f;
-    //pc++;
+PC();
 
-*/
-=======
 
-    pc++; */
->>>>>>> Stashed changes
+
 }
 
 void PIC::ANDWF(){
