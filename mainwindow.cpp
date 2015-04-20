@@ -15,7 +15,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->actionLaden, SIGNAL(triggered()), this, SLOT(loadFile()));
 
-    pic=new PIC();
+    pic=new PIC(this);
+    ui->regView->setModel(pic->regModel);
+    ui->regView->setItemDelegate(pic->regModelDlgt);
+    ui->regView->resizeColumnsToContents();
 }
 
 MainWindow::~MainWindow()

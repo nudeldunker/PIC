@@ -3,6 +3,8 @@
 
 PIC::PIC(QObject *parent) : QObject(parent)
 {
+    regModel=new RegModel(parent);
+    regModelDlgt= new RegModelDlgt(qobject_cast<QWidget*>(parent));
 
 }
 
@@ -162,3 +164,29 @@ void PIC::MOVLW3(){qDebug() << "MOVLW3";}
 void PIC::MOVLW4(){qDebug() << "MOVLW4";}
 void PIC::IORLW(){qDebug() << "IORLW";}
 
+
+
+//void PIC::CBit(bool set)
+//{
+//    if(set)
+//        this->regModel->reg[STATUS] |= 0x1;
+//    else
+//        this->regModel->reg[STATUS] &= 0xFE;
+//}
+
+//void PIC::DCBit(bool set)
+//{
+//    if(set)
+//        this->regModel->reg[STATUS] |=0x2;
+//    else
+//        this->regModel->reg[STATUS] &= 0xDE;
+//}
+
+//void PIC::ZBit(bool set)
+//{
+//    if(set)
+//        this->regModel->reg[STATUS] |= 0x4;
+//    else
+//        this->regModel->reg[STATUS] &= 0xFB;
+
+//}

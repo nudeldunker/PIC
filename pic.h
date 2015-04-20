@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "regmodel.h"
+#include "regmodeldlgt.h"
 
 class PIC : public QObject
 {
@@ -19,6 +20,10 @@ public:
 
     //RegModel *regmodel;
     QList<int> m_CmdList;
+
+    RegModel *regModel;
+    RegModelDlgt *regModelDlgt;
+
 
 
 

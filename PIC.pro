@@ -10,7 +10,8 @@ HEADERS += \
     mainwindow.h \
     pic.h \
     regmodel.h \
-    regmodeldlgt.h
+    regmodeldlgt.h \
+    adressen.h
 
 SOURCES += \
     mainwindow.cpp \

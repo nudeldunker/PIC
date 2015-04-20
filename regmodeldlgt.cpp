@@ -25,10 +25,11 @@ QSize RegModelDlgt::sizeHint(const QStyleOptionViewItem &option, const QModelInd
 
 QWidget * RegModelDlgt::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QValidator *validator= new QIntValidator(0,0xFF, parent);
+    //QValidator *validator= new QIntValidator(0,0xFF, parent);
     QLineEdit *leditor= new QLineEdit(parent);
+    leditor->setInputMask("hh");
 
-    leditor->setValidator(validator);
+    //leditor->setValidator(validator);
 
     return leditor;
 }
@@ -39,6 +40,8 @@ void RegModelDlgt::setEditorData(QWidget *editor, const QModelIndex &index) cons
     {
        leditor->setText(index.model()->data(index, Qt::EditRole).toString());
     }
+
+    else QStyledItemDelegate::setEditorData(editor, index);
 }
 
 void RegModelDlgt::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
