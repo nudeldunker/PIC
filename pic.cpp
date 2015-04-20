@@ -114,18 +114,35 @@ void PIC::decodeCmd()
 
 void PIC::ADDWF(){
     qDebug() << "ADDWF";
+    /*if(d=0){
+    W = W + f;
+    }else{
+    f = W + f;
+    }
 
+<<<<<<< HEAD
+    pc++; */
+=======
     //W = W + f;
     //pc++;
 
 
+<<<<<<< Updated upstream
+=======
+>>>>>>> origin/master
+>>>>>>> Stashed changes
 }
 
 void PIC::ANDWF(){
     qDebug() << "ANDWF";
 
-    //W= W & f;
-    //pc++;
+    /*if(d=0){
+    W = W & f;
+    }else{
+    f = W & f;
+    }
+
+    pc++; */
 }
 
 void PIC::CLRF(){
@@ -253,6 +270,7 @@ void PIC::XORWF(){
 
 void PIC::BCF(){
     qDebug() << "BCF";
+
 
     //pc++;
 
