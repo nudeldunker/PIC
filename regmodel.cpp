@@ -108,7 +108,7 @@ bool RegModel::setData(const QModelIndex& index, const QVariant& value, int role
 
         reg[bank][idx]=value.toString().toInt(0,16); //TODO direkt in Hex
 
-        if(idx==STATUS || idx==PCL || idx== PCLATH || idx==INTCON)
+        if(idx==STATUS || idx==PCL || idx== PCLATH || idx==INTCON || idx==FSR)
         {
             updateOtherBank(bank, idx);
         }
