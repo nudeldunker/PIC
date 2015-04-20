@@ -146,7 +146,7 @@ void PIC::ADDWF(){
     //W = W + f;
     //pc++;
 
-
+*/
 }
 
 void PIC::ANDWF(){
