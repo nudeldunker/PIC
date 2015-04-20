@@ -146,8 +146,6 @@ else regModel->reg[bank][f]=erg;
 
 PC();
 
-
-
 }
 
 void PIC::ANDWF(){
@@ -157,79 +155,108 @@ void PIC::ANDWF(){
     W = W & f;
     }else{
     f = W & f;
-    }
+    }*/
 
-    pc++; */
+    PC();
 }
 
 void PIC::CLRF(){
     qDebug() << "CLRF";
 
     //f  = 0x0;
-    //pc++;
+    PIC::ZBit(true);
+    PC();
 }
 
 void PIC::CLRW(){
     qDebug() << "CLRW";
 
     //W = 0x0;
-    //pc++;
+    PIC::ZBit(true);
+    PIC::PC();
 }
 
 void PIC::COMF(){
     qDebug() << "COMF";
 
-    //f = ~f;
-    //pc++;
+    /*if(d==0){
+    W = ~f;}
+    else if(d==1){
+    f = ~f;}*/
+    PIC::PC();
 }
 
 void PIC::DECF(){
     qDebug() << "DECF";
 
-    //f = f-1;
-    //pc++;
+   /* if(d==0){
+    W = f-1;}
+    else if(d==1){
+    f = f-1;}*/
+    PIC::PC();
 }
 
 void PIC::DECFSZ(){
     qDebug() << "DECFSZ";
 
-   if(d=1){
-
+  /*if(d=1){
+   f=f-1;
+   if(f!=0){
+   PC();}else{NOP();}
    }
-//pc++;
+   else if(d=0){
+   W=f-1;
+   if(W!=0){
+   PC();}else{NOP();}
+   }*/
+
+
 }
 
 void PIC::INCF(){
     qDebug() << "INCF";
 
-    //f = f+1;
-    //pc++;
+    /*if(d==1){
+    f = f+1;}
+    else if(d==0){
+    W = f+1;}*/
+    PC();
 }
 
 void PIC::INCFSZ(){
     qDebug() << "INCFSZ";
 
-    /* if(f != 0x0){
-        f = f+1;
-     } else{
-         f=f;
-     }*/
-    //pc++;
+    /*if(d=1){
+    f=f+1;
+    if(f!=0){
+    PC();}else{NOP();}
+    }
+    else if(d=0){
+    W=f+1;
+    if(W!=0){
+    PC();}else{NOP();}
+    }*/
 }
 
 void PIC::IORWF(){
     qDebug() << "IORWF";
 
-    //W = W | f;
-    //pc++;
+    /*if(d==1){
+    W = W | f;}
+    else if(d==0){
+    f = W | f;
+    }*/
+    PIC::PC();
 }
 
 void PIC::MOVF(){
     qDebug() << "MOVF";
 
-    /*x = f;
-    f = 0x0;*/
-    //pc++;
+    /*if(d==0){
+    W = f;}
+    else if(d==1){
+    f = f;} */
+    PIC::PC();
 }
 
 void PIC::MOVWF(){
@@ -243,43 +270,77 @@ void PIC::MOVWF(){
 void PIC::NOP(){
     qDebug() << "NOP";
 
-    //pc++;
+    PIC::PC();
 
 }
 
 void PIC::RLF(){
     qDebug() << "RLF";
-
-    //pc++;
+    //Multiplizieren
+    /*int carryset = f & 0x80;
+    int carryget = this->regModel->reg[bank][STATUS]&0x1;
+    f = f*2;
+    if(carrget==1){
+    f=f+1;
+    }else if(carryget==0){
+        f=f;
+    }
+    if(carryset==1){
+    PIC::CBit(true);}
+    else if(carryset==0){
+    PIC::CBit(false);}
+    PIC::PC();*/
 
 }
 
 void PIC::RRF(){
     qDebug() << "RRF";
-
-    //pc++;
+    /*int carryset = f & 0x1;
+    int carryget = this->regModel->reg[bank][STATUS]&0x1;
+    f = f/2;
+    if(carrget==1){
+    f=f+128;
+    }else if(carryget==0){
+        f=f;
+    }
+    if(carryset==1){
+    PIC::CBit(true);}
+    else if(carryset==0){
+    PIC::CBit(false);}
+    PIC::PC();*/
 
 }
 
 void PIC::SUBWF(){
     qDebug() << "SUBWF";
 
-  //f = f-W;
-    //pc++;
-}
+    /*if(d==0){
+        W = f - W;}else if(d==1){
+        f = f -W;}*/
+
+    PIC::PC();}
 
 void PIC::SWAPF(){
     qDebug() << "SWAPF";
+    /*int leftnibble = f & 0xF0;
+    int rightnibble = f & 0xF;
+    leftnibble = leftnibble / 16;
+    rightnibble = rightnibble * 16;
+    f = f | leftnibble;
+    f = f | rightnibble;*/
+    PIC::PC();
 
-    //swap nibbles? watt?
-    //pc++;
 }
 
 void PIC::XORWF(){
     qDebug() << "XORWF";
 
-    //W = W ^ f;
-    //pc++;
+    /*if(d==0){
+    W = W ^ f;}
+    else if(d==1){
+    f = W ^ f;}*/
+
+    PIC::PC();
 }
 
 void PIC::BCF(){
@@ -321,7 +382,7 @@ void PIC::BTFSS(){
 void PIC::ADDLW(){
     qDebug() << "ADDLW";
 
-  //w = l + W;
+  //W = l + W;
     //pc++;
 }
 
@@ -433,7 +494,7 @@ void PIC::MOVLW4(){
 void PIC::IORLW(){
     qDebug() << "IORLW";
 
-    //l = l | W;
+    //W = l | W;
     //pc++;
 
 }
