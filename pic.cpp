@@ -1,5 +1,6 @@
 #include "pic.h"
 #include "QDebug"
+#include "math.h"
 
 PIC::PIC(QObject *parent) : QObject(parent)
 {
@@ -120,6 +121,7 @@ void PIC::ADDWF(){
     f = W + f;
     }
 
+<<<<<<< Updated upstream
     int erg= regModel->reg[bank][W]+regModel->reg[bank][f];
 
     if(erg > 255)
@@ -147,6 +149,10 @@ void PIC::ADDWF(){
     //pc++;
 
 */
+=======
+
+    pc++; */
+>>>>>>> Stashed changes
 }
 
 void PIC::ANDWF(){
@@ -192,12 +198,9 @@ void PIC::DECF(){
 void PIC::DECFSZ(){
     qDebug() << "DECFSZ";
 
-    //Decrement f skip if 0
-   /* if(f != 0x0){
-       f = f-1;
-    } else{
-        f=f;
-    }*/
+   if(d=1){
+
+   }
 //pc++;
 }
 
@@ -287,7 +290,8 @@ void PIC::XORWF(){
 void PIC::BCF(){
     qDebug() << "BCF";
 
-
+    //Verunden mit dem 1er-Complement von 2^b
+    //f = f & ~pow(2,b);
     //pc++;
 
 }
@@ -296,21 +300,26 @@ void PIC::BCF(){
 void PIC::BSF(){
     qDebug() << "BSF";
 
+    //Verodern mit 2^b
+    //f= f | pow(2,b);
     //pc++;
-
 }
 
 void PIC::BTFSC(){
     qDebug() << "BTFSC";
-
+    /*if(b=0){
+        pc++;
+    }else{NOP();}*/
     //pc++;
 
 }
 
 void PIC::BTFSS(){
     qDebug() << "BTFSS";
+    /*if(b=1){
+        pc++;
+    }else{NOP();}*/
 
-    //pc++;
 
 }
 
