@@ -86,83 +86,317 @@ void PIC::decodeCmd()
         GOTO();
      else if((ByteCmd) == 0x3A00)
         XORLW();
-
      else if((m_CmdList[i] & 0x3E00 ) == 0x3C00)
         SUBLW1();
-
      else if((ByteCmd) == 0x3C00)
         SUBLW2();
-
     else if((m_CmdList[i] & 0xFFFF ) == 0x0063)
         SLEEP();
-
     else if((m_CmdList[i] & 0xFFFF ) == 0x0008)
         RETURN();
-
     else if((BitCmd) == 0x3400)
         RETURNLW();
-
     else if((m_CmdList[i] & 0xFFFF ) == 0x0009)
         RETURNFIE();
-
     else if((ByteCmd) == 0x3000)
         MOVLW1();
-
     else if((ByteCmd) == 0x3100)
         MOVLW2();
-
     else if((ByteCmd) == 0x3200)
         MOVLW3();
-
     else if((ByteCmd) == 0x3300)
         MOVLW4();
-
-
     else if((ShrtCmd) == 0x3800)
         IORLW();
 }
 }
 
 
-void PIC::ADDWF(){qDebug() << "ADDWF";}
-void PIC::ANDWF(){qDebug() << "ANDWF";}
-void PIC::CLRF(){qDebug() << "CLRF";}
-void PIC::CLRW(){qDebug() << "CLRW";}
-void PIC::COMF(){qDebug() << "COMF";}
-void PIC::DECF(){qDebug() << "DECF";}
-void PIC::DECFSZ(){qDebug() << "DECFSZ";}
-void PIC::INCF(){qDebug() << "INCF";}
-void PIC::INCFSZ(){qDebug() << "INCFSZ";}
-void PIC::IORWF(){qDebug() << "IORWF";}
-void PIC::MOVF(){qDebug() << "MOVF";}
-void PIC::MOVWF(){qDebug() << "MOVWF";}
-void PIC::NOP(){qDebug() << "NOP";}
-void PIC::RLF(){qDebug() << "RLF";}
-void PIC::RRF(){qDebug() << "RRF";}
-void PIC::SUBWF(){qDebug() << "SUBWF";}
-void PIC::SWAPF(){qDebug() << "SWAPF";}
-void PIC::XORWF(){qDebug() << "XORWF";}
-void PIC::BCF(){qDebug() << "BCF";}
-void PIC::BSF(){qDebug() << "BSF";}
-void PIC::BTFSC(){qDebug() << "BTFSC";}
-void PIC::BTFSS(){qDebug() << "BTFSS";}
-void PIC::ADDLW(){qDebug() << "ADDLW";}
-void PIC::ANDLW(){qDebug() << "ANDLW";}
-void PIC::CALL(){qDebug() << "CALL";}
-void PIC::CLRWDT(){qDebug() << "CLRWDT";}
-void PIC::GOTO(){qDebug() << "GOTO";}
-void PIC::XORLW(){qDebug() << "XORLW";}
-void PIC::SUBLW1(){qDebug() << "SUBLW1";}
-void PIC::SUBLW2(){qDebug() << "SUBLW2";}
-void PIC::SLEEP(){qDebug() << "SLEEP";}
-void PIC::RETURN(){qDebug() << "RETURN";}
-void PIC::RETURNLW(){qDebug() << "RETURNLW";}
-void PIC::RETURNFIE(){qDebug() << "RETURNFIE";}
-void PIC::MOVLW1(){qDebug() << "MOVLW1";}
-void PIC::MOVLW2(){qDebug() << "MOVLW2";}
-void PIC::MOVLW3(){qDebug() << "MOVLW3";}
-void PIC::MOVLW4(){qDebug() << "MOVLW4";}
-void PIC::IORLW(){qDebug() << "IORLW";}
+void PIC::ADDWF(){
+    qDebug() << "ADDWF";
+
+    //W = W + f;
+    //pc++;
+}
+
+void PIC::ANDWF(){
+    qDebug() << "ANDWF";
+
+    //W= W & f;
+    //pc++;
+}
+
+void PIC::CLRF(){
+    qDebug() << "CLRF";
+
+    //f  = 0x0;
+    //pc++;
+}
+
+void PIC::CLRW(){
+    qDebug() << "CLRW";
+
+    //W = 0x0;
+    //pc++;
+}
+
+void PIC::COMF(){
+    qDebug() << "COMF";
+
+    //f = ~f;
+    //pc++;
+}
+
+void PIC::DECF(){
+    qDebug() << "DECF";
+
+    //f = f-1;
+    //pc++;
+}
+
+void PIC::DECFSZ(){
+    qDebug() << "DECFSZ";
+
+    //Decrement f skip if 0
+   /* if(f != 0x0){
+       f = f-1;
+    } else{
+        f=f;
+    }*/
+//pc++;
+}
+
+void PIC::INCF(){
+    qDebug() << "INCF";
+
+    //f = f+1;
+    //pc++;
+}
+
+void PIC::INCFSZ(){
+    qDebug() << "INCFSZ";
+
+    /* if(f != 0x0){
+        f = f+1;
+     } else{
+         f=f;
+     }*/
+    //pc++;
+}
+
+void PIC::IORWF(){
+    qDebug() << "IORWF";
+
+    //W = W | f;
+    //pc++;
+}
+
+void PIC::MOVF(){
+    qDebug() << "MOVF";
+
+    /*x = f;
+    f = 0x0;*/
+    //pc++;
+}
+
+void PIC::MOVWF(){
+    qDebug() << "MOVWF";
+
+  /*f = W;
+    w = 0x0;*/
+    //pc++;
+}
+
+void PIC::NOP(){
+    qDebug() << "NOP";
+
+    //pc++;
+
+}
+
+void PIC::RLF(){
+    qDebug() << "RLF";
+
+    //pc++;
+
+}
+
+void PIC::RRF(){
+    qDebug() << "RRF";
+
+    //pc++;
+
+}
+
+void PIC::SUBWF(){
+    qDebug() << "SUBWF";
+
+  //f = f-W;
+    //pc++;
+}
+
+void PIC::SWAPF(){
+    qDebug() << "SWAPF";
+
+    //swap nibbles? watt?
+    //pc++;
+}
+
+void PIC::XORWF(){
+    qDebug() << "XORWF";
+
+    //W = W ^ f;
+    //pc++;
+}
+
+void PIC::BCF(){
+    qDebug() << "BCF";
+
+    //pc++;
+
+}
+
+
+void PIC::BSF(){
+    qDebug() << "BSF";
+
+    //pc++;
+
+}
+
+void PIC::BTFSC(){
+    qDebug() << "BTFSC";
+
+    //pc++;
+
+}
+
+void PIC::BTFSS(){
+    qDebug() << "BTFSS";
+
+    //pc++;
+
+}
+
+void PIC::ADDLW(){
+    qDebug() << "ADDLW";
+
+  //w = l + W;
+    //pc++;
+}
+
+void PIC::ANDLW(){
+    qDebug() << "ANDLW";
+
+    //w = l & W;
+    //pc++;
+}
+
+void PIC::CALL(){
+    qDebug() << "CALL";
+    //pc++;
+
+
+}
+
+void PIC::CLRWDT(){
+    qDebug() << "CLRWDT";
+
+    //wdt = 0x0;
+    //pc++;
+}
+
+void PIC::GOTO(){
+    qDebug() << "GOTO";
+
+    //pc++;
+
+}
+
+void PIC::XORLW(){
+    qDebug() << "XORLW";
+
+    //l = l ^ W;
+    //pc++;
+}
+
+void PIC::SUBLW1(){
+    qDebug() << "SUBLW1";
+
+    // l = l-W;
+    //pc++;
+}
+
+void PIC::SUBLW2(){
+    qDebug() << "SUBLW2";
+
+    // l = l-W;
+    //pc++;
+}
+
+void PIC::SLEEP(){
+    qDebug() << "SLEEP";
+
+    system("pause");
+    //pc++;
+}
+
+void PIC::RETURN(){
+    qDebug() << "RETURN";
+
+    //pc++;
+
+}
+
+void PIC::RETURNLW(){
+    qDebug() << "RETURNLW";
+
+    //pc++;
+
+}
+
+void PIC::RETURNFIE(){
+    qDebug() << "RETURNFIE";
+
+    //pc++;
+
+}
+
+void PIC::MOVLW1(){
+    qDebug() << "MOVLW1";
+
+    //W = l;
+    //pc++;
+}
+
+void PIC::MOVLW2(){
+    qDebug() << "MOVLW2";
+
+    //W = l;
+    //pc++;
+}
+
+void PIC::MOVLW3(){
+    qDebug() << "MOVLW3";
+
+    //W = l;
+    //pc++;
+}
+
+void PIC::MOVLW4(){
+    qDebug() << "MOVLW4";
+
+    //W = l;
+    //pc++;
+}
+
+void PIC::IORLW(){
+    qDebug() << "IORLW";
+
+    //l = l | W;
+    //pc++;
+
+}
 
 
 
