@@ -117,6 +117,8 @@ void PIC::ADDWF(){
 
     //W = W + f;
     //pc++;
+
+
 }
 
 void PIC::ANDWF(){
@@ -449,4 +451,9 @@ void PIC::RP0Bit (bool set)
         this->regModel->reg[STATUS] |= 0x20;
     else
         this->regModel->reg[STATUS] &= 0xCF;
+}
+
+void PIC::PC()
+{
+
 }

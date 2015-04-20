@@ -67,6 +67,13 @@ public:
  void MOVLW3();
  void MOVLW4();
  void IORLW();
+ void PC();
+ void RP0Bit(bool set);
+ void TOBit(bool set);
+ void PDBit(bool set);
+ void ZBit(bool set);
+ void DCBit(bool set);
+ void CBit(bool set);
 signals:
 
 public slots:
