@@ -5,13 +5,16 @@
 #include "regmodel.h"
 #include "regmodeldlgt.h"
 
+typedef QVector<int> regs;
+
+
 class PIC : public QObject
 {
     Q_OBJECT
 public:
     explicit PIC(QObject *parent = 0);
     ~PIC();
-    int k_0;
+    int k_long=0;
     int k=0;
     int f=0;
     int d=0;
@@ -27,12 +30,16 @@ public:
     RegModel *regModel;
     RegModelDlgt *regModelDlgt;
 
-    //fÃ¼r CALL
+    //für CALL
     int stackpointer = 0;
     int stack[7];
 
+    bool stop=true;
+    bool singleStep=false;
 
  void teststackptr();
+
+
  void decodeCmd();
  void ADDWF();
  void ANDWF();
@@ -76,9 +83,21 @@ public:
  void ZBit(bool set);
  void DCBit(bool set);
  void CBit(bool set);
+
+ int getPC();
 signals:
+ void pointer();
+ void finished();
 
 public slots:
+ void init();
+ void runCode();
+ void updateReg();
+ void stopExec(bool stop);
+ void decodeCmd(int pc);
+
+
+ void finish();
 };
 
 #endif // PIC_H

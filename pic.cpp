@@ -4,8 +4,16 @@
 
 PIC::PIC(QObject *parent) : QObject(parent)
 {
-    regModel=new RegModel(parent);
-    regModelDlgt= new RegModelDlgt(qobject_cast<QWidget*>(parent));
+//    regModel=new RegModel(parent);
+//    regModelDlgt= new RegModelDlgt(qobject_cast<QWidget*>(parent));
+
+}
+
+void PIC::init()
+{
+    regModel=new RegModel();
+    regModelDlgt=new RegModelDlgt();
+    emit pointer();
 
 }
 
@@ -14,22 +22,47 @@ PIC::~PIC()
 
 }
 
-void PIC::decodeCmd()
+void PIC::runCode()
+{
+    int pc=getPC();
+    while( pc< m_CmdList.size() && (!stop || singleStep))
+    {
+        decodeCmd(pc);
+        pc=getPC();
+
+        if(singleStep==true) qDebug()<<"---------------------------------------------------------------------------Single Step";
+
+        singleStep=false;
+    }
+}
+
+void PIC::stopExec(bool stop)
+{
+    stop=stop;
+    qDebug()<< stop;
+}
+
+int PIC::getPC()
+{
+  return (regModel->reg[bank][PCLATH]<<8) +regModel->reg[bank][PCL];
+}
+
+void PIC::decodeCmd(int pc)
 {
 
 
-    for( int i=0; i<m_CmdList.size(); i++)
-    {
-     int k_long=m_CmdList[i] & 0x7FF;
-     k=m_CmdList[i] & 0xFF;
-     f=m_CmdList[i] & 0x7F;
-     d=m_CmdList[i] & 0x80;
-     l=d;
-     b=m_CmdList[i] & 0x380;
 
-     int ByteCmd=m_CmdList[i] & 0x3F00;
-     int BitCmd=m_CmdList[i] & 0x3C00;
-     int ShrtCmd=m_CmdList[i] & 0x3800;
+//    {
+        k_long=m_CmdList[pc] & 0x7FF;
+        k=m_CmdList[pc] & 0xFF;
+        f=m_CmdList[pc] & 0x7F;
+        d=m_CmdList[pc] & 0x80;
+        l=d;
+        b=m_CmdList[pc] & 0x380;
+
+     int ByteCmd=m_CmdList[pc] & 0x3F00;
+     int BitCmd=m_CmdList[pc] & 0x3C00;
+     int ShrtCmd=m_CmdList[pc] & 0x3800;
 
      if(ByteCmd == 0x0700 )
         ADDWF();
@@ -37,7 +70,7 @@ void PIC::decodeCmd()
         ANDWF();
      else if(ByteCmd == 0x0100)
         CLRF();
-     else if((m_CmdList[i] & 0x3F80) == 0x0100)
+     else if((m_CmdList[pc] & 0x3F80) == 0x0100)
         CLRW();
      else if(ByteCmd == 0x0900)
         COMF();
@@ -55,7 +88,7 @@ void PIC::decodeCmd()
         MOVF();
      else if(ByteCmd == 0x0000)
         MOVWF();
-     else if((m_CmdList[i] & 0x3F9F) == 0x0000)
+     else if((m_CmdList[pc] & 0x3F9F) == 0x0000)
         NOP();
      else if(ByteCmd == 0x0D00)
         RLF();
@@ -75,27 +108,27 @@ void PIC::decodeCmd()
         BTFSC();
      else if(BitCmd == 0x1C00)
         BTFSS();
-     else if((m_CmdList[i] & 0x3E00 ) == 0x3E00)
+     else if((m_CmdList[pc] & 0x3E00 ) == 0x3E00)
         ADDLW();
      else if(ByteCmd == 0x3900)
         ANDLW();
      else if(ShrtCmd == 0x2000)
         CALL();
-     else if((m_CmdList[i]& 0XFFFF) == 0x0064)
+     else if((m_CmdList[pc]& 0XFFFF) == 0x0064)
         CLRWDT();
      else if(ShrtCmd == 0x2800)
         GOTO();
      else if((ByteCmd) == 0x3A00)
         XORLW();
-     else if((m_CmdList[i] & 0x3E00 ) == 0x3C00)
+     else if((m_CmdList[pc] & 0x3E00 ) == 0x3C00)
         SUBLW();
      else if((m_CmdList[i] & 0xFFFF ) == 0x0063)
         SLEEP();
-    else if((m_CmdList[i] & 0xFFFF ) == 0x0008)
+    else if((m_CmdList[pc] & 0xFFFF ) == 0x0008)
         RETURN();
     else if((BitCmd) == 0x3400)
         RETURNLW();
-    else if((m_CmdList[i] & 0xFFFF ) == 0x0009)
+    else if((m_CmdList[pc] & 0xFFFF ) == 0x0009)
         RETURNFIE();
     else if((ByteCmd) == 0x3000)
         MOVLW();
@@ -107,22 +140,32 @@ void PIC::decodeCmd()
         MOVLW();
     else if((ShrtCmd) == 0x3800)
         IORLW();
-}
+//}
+
 }
 
 
 
 void PIC::ADDWF(){
     qDebug() << "ADDWF";
+    /*if(d=0){
+    W = W + f;
+    }else{
+    f = W + f;
+    }*/
 
 int erg= regModel->reg[bank][W]+regModel->reg[bank][f];
 
-if(erg > 255)
-{
-    CBit(true);
-    erg=0;
-}
-else CBit(false);
+    if(erg==0)
+        ZBit(true);
+    else ZBit(false);
+
+    if(erg > 255)
+    {
+        CBit(true);
+        erg=0;
+    }
+    else CBit(false);
 
 if(regModel->reg[bank][W]<16 && erg>16)
 {
@@ -158,11 +201,30 @@ void PIC::ANDWF(){
     }
 
     PC();
+    int erg= W & regModel->reg[bank][f];
+    if(erg==0)
+    {
+        ZBit(true);
+    }
+    else ZBit(false);
+
+    if(d==0)
+    {
+        W=erg;
+    }
+    else regModel->reg[bank][f]=erg;
+
+
+    PC();
+
+
 }
 
 void PIC::CLRF(){
     qDebug() << "CLRF";
-
+    regModel->reg[bank][f]=0;
+    ZBit(true);
+    PC();
     //f  = 0x0;
     regModel->reg[bank][f]=0;
     PIC::ZBit(true);
@@ -171,6 +233,10 @@ void PIC::CLRF(){
 
 void PIC::CLRW(){
     qDebug() << "CLRW";
+    W=0;
+    ZBit(true);
+    PC();
+    //W = 0x0;
 
     //W = 0x0;
     regModel->reg[bank][W]=0;
@@ -730,6 +796,8 @@ void PIC::PC()
         regModel->reg[bank][PCL]&= 0xFF;
         regModel->reg[bank][PCLATH]++;
     }
+
+    regModel->dataChanged(regModel->index(0,0, QModelIndex()), regModel->index(0,0, QModelIndex()));
 }
 
 void PIC::teststackptr(){
@@ -738,4 +806,14 @@ void PIC::teststackptr(){
     }else if(stackpointer >= 7){
         stackpointer = 0;
     }
+}
+
+void PIC::updateReg()
+{
+    regModel->dataChanged(regModel->index(0,0,QModelIndex()), regModel->index(regModel->rowCount()-1, regModel->columnCount()-1,QModelIndex()));
+}
+
+void PIC::finish()
+{
+    emit finished();
 }
