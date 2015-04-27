@@ -125,8 +125,8 @@ int RegModel::getIDX(int row, int column) const
 
     int idx=row*columnCount()+column;
     if(idx>=BANK1_ADR) idx-=BANK1_ADR;
-    qDebug()<< "Alter Index : Reihe: " <<row <<"Spalte" <<column;
-    qDebug()<< "Neuer Index : "<<idx;
+//    qDebug()<< "Alter Index : Reihe: " <<row <<"Spalte" <<column;
+//    qDebug()<< "Neuer Index : "<<idx;
     return idx;
 }
 

@@ -66,7 +66,6 @@ void MainWindow::singleStep()
 {
     pic->singleStep=true;
     pic->runCode();
-    qDebug() << "Signle Step = truuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuueeeeeeeeeeeeeeeeeeeeeee";
 }
 
 void MainWindow::updateReg()
