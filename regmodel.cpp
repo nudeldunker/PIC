@@ -113,7 +113,7 @@ bool RegModel::setData(const QModelIndex& index, const QVariant& value, int role
             updateOtherBank(bank, idx);
         }
 
-        emit dataChanged(index, index);
+        //emit dataChanged(index, index);
         return true;
     }
 

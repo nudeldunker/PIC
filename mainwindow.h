@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include "pic.h"
+#include <QThread>
+#include <QTimer>
 
 namespace Ui {
 class MainWindow;
@@ -20,6 +22,11 @@ public:
    // void decodeCmd();
 
     PIC *pic;
+    QThread *thread;
+
+    QTimer * UpdateRegTimer;
+public slots:
+    void setView(RegModel *regModel, RegModelDlgt *regModelDlgt);
 private slots:
     void loadFile();
     void on_pushButton_clicked();

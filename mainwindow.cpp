@@ -15,17 +15,32 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     connect(ui->actionLaden, SIGNAL(triggered()), this, SLOT(loadFile()));
 
+    UpdateRegTimer=new QTimer(this);
+    UpdateRegTimer->start(10000); //Einmal die Sekunde updaten
+
     pic=new PIC(this);
-    ui->regView->setModel(pic->regModel);
-    ui->regView->setItemDelegate(pic->regModelDlgt);
+    thread=new QThread();
+    pic->moveToThread(thread);
+
+
+    connect(thread, SIGNAL(started()), pic, SLOT(init()));
+    connect(ui->pushButton, SIGNAL(clicked()), pic, SLOT(runCode()));
+    connect(pic, SIGNAL(pointer(RegModel*,RegModelDlgt*)), this, SLOT(setView(RegModel*, RegModelDlgt*)));
+    connect(UpdateRegTimer, SIGNAL(timeout()), pic, SLOT(updateReg()));
+
+    connect(thread, SIGNAL(finished()), pic, SLOT(deleteLater()));
+
+    thread->start();}
+void MainWindow::setView(RegModel* regModel, RegModelDlgt* regModelDlgt)
+{
+    ui->regView->setModel(regModel);
+    ui->regView->setItemDelegate(regModelDlgt);
     ui->regView->resizeColumnsToContents();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-
-    //BlablaBlub
 }
 
 void MainWindow::loadFile()
@@ -195,5 +210,6 @@ void MainWindow::reset()
 
 void MainWindow::on_pushButton_clicked()
 {
-    pic->decodeCmd();
+
+   // pic->decodeCmd();
 }

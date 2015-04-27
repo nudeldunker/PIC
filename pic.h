@@ -11,7 +11,7 @@ class PIC : public QObject
 public:
     explicit PIC(QObject *parent = 0);
     ~PIC();
-    int k_0;
+    int k_long=0;
     int k=0;
     int f=0;
     int d=0;
@@ -25,6 +25,10 @@ public:
 
     RegModel *regModel;
     RegModelDlgt *regModelDlgt;
+
+    int W;
+
+    bool stop=false;
 
 
 
@@ -76,9 +80,17 @@ public:
  void ZBit(bool set);
  void DCBit(bool set);
  void CBit(bool set);
+ void stopExec(bool stop);
+ void decodeCmd(int pc);
+ int getPC();
 signals:
+ void pointer(RegModel *regModel, RegModelDlgt *regModelDlgt);
 
 public slots:
+ void init();
+ void runCode();
+ void updateReg();
+
 };
 
 #endif // PIC_H
