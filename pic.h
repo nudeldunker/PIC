@@ -24,6 +24,8 @@ public:
 
     int bank=0;
 
+    int W=0;
+
     //RegModel *regmodel;
     QList<int> m_CmdList;
 

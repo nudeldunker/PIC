@@ -122,7 +122,7 @@ void PIC::decodeCmd(int pc)
         XORLW();
      else if((m_CmdList[pc] & 0x3E00 ) == 0x3C00)
         SUBLW();
-     else if((m_CmdList[i] & 0xFFFF ) == 0x0063)
+     else if((m_CmdList[pc] & 0xFFFF ) == 0x0063)
         SLEEP();
     else if((m_CmdList[pc] & 0xFFFF ) == 0x0008)
         RETURN();
@@ -154,7 +154,7 @@ void PIC::ADDWF(){
     f = W + f;
     }*/
 
-int erg= regModel->reg[bank][W]+regModel->reg[bank][f];
+int erg= W+regModel->reg[bank][f];
 
     if(erg==0)
         ZBit(true);
@@ -167,7 +167,7 @@ int erg= regModel->reg[bank][W]+regModel->reg[bank][f];
     }
     else CBit(false);
 
-if(regModel->reg[bank][W]<16 && erg>16)
+if(W<16 && erg>16)
 {
    DCBit(true);
 }
@@ -175,7 +175,7 @@ else DCBit(false);
 
 if(d==0)
 {
-    regModel->reg[bank][W]=erg;
+    W=erg;
 }
 else regModel->reg[bank][f]=erg;
 
@@ -186,7 +186,7 @@ PC();
 void PIC::ANDWF(){
     qDebug() << "ANDWF";
 
-    int erg= regModel->reg[bank][W]&regModel->reg[bank][f];
+    int erg= W&regModel->reg[bank][f];
     if(erg > 255)
     {
         CBit(true);
@@ -195,25 +195,10 @@ void PIC::ANDWF(){
     else CBit(false);
 
     if(d==0){
-    regModel->reg[bank][W]=erg;
+    W=erg;
     }else{
     regModel->reg[bank][f]=erg;
     }
-
-    PC();
-    int erg= W & regModel->reg[bank][f];
-    if(erg==0)
-    {
-        ZBit(true);
-    }
-    else ZBit(false);
-
-    if(d==0)
-    {
-        W=erg;
-    }
-    else regModel->reg[bank][f]=erg;
-
 
     PC();
 
@@ -233,13 +218,11 @@ void PIC::CLRF(){
 
 void PIC::CLRW(){
     qDebug() << "CLRW";
-    W=0;
-    ZBit(true);
-    PC();
+
     //W = 0x0;
 
     //W = 0x0;
-    regModel->reg[bank][W]=0;
+    W=0;
     PIC::ZBit(true);
     PC();
 }
@@ -257,7 +240,7 @@ void PIC::COMF(){
     else if(d==1){
     f = ~f;}*/
     if(d==0){
-    regModel->reg[bank][W]=erg;}
+    W=erg;}
     else if(d==1){
     regModel->reg[bank][f]=erg;}
     PC();
@@ -277,7 +260,7 @@ void PIC::DECF(){
     qDebug() << erg;
 
     if(d==0){
-    regModel->reg[bank][W]= erg;}
+    W= erg;}
     else if(d==1){
     regModel->reg[bank][f]=erg;}
 
@@ -311,8 +294,8 @@ void PIC::DECFSZ(){
      PC();}else{NOP();}
      }
      else if(d==0){
-     regModel->reg[bank][W]=erg;
-     if(regModel->reg[bank][W]==0){
+     W=erg;
+     if(W==0){
      PC();}else{NOP();}
      }
 
@@ -334,7 +317,7 @@ void PIC::INCF(){
     qDebug() << erg;
 
     if(d==0){
-    regModel->reg[bank][W]= erg;}
+    W= erg;}
     else if(d==1){
     regModel->reg[bank][f]=erg;}
 
@@ -370,8 +353,8 @@ void PIC::INCFSZ(){
      PC();}else{NOP();}
      }
      else if(d==0){
-     regModel->reg[bank][W]=erg;
-     if(regModel->reg[bank][W]==0){
+     W=erg;
+     if(W==0){
      PC();}else{NOP();}
      }
 
@@ -387,12 +370,12 @@ void PIC::IORWF(){
     }*/
 
     qDebug() << regModel->reg[bank][f];
-    qDebug() << regModel->reg[bank][W];
-    int erg=regModel->reg[bank][f]||regModel->reg[bank][W];
+    qDebug() << W;
+    int erg=regModel->reg[bank][f]||W;
     qDebug() << erg;
 
     if(d==1){
-    regModel->reg[bank][W] = erg;}
+    W = erg;}
     else if(d==0){
     regModel->reg[bank][f] = erg;
     }
@@ -411,12 +394,12 @@ void PIC::MOVF(){
     qDebug() << regModel->reg[bank][f];
 
     if(d==0){
-    regModel->reg[bank][W] = regModel->reg[bank][f];}
+    W = regModel->reg[bank][f];}
     else if(d==1){
     regModel->reg[bank][f] = regModel->reg[bank][f];
     ZBit(true);}
 
-    qDebug() << regModel->reg[bank][W];
+    qDebug() << W;
 
     PC();
 }
@@ -427,9 +410,9 @@ void PIC::MOVWF(){
   /*f = W;
     w = 0x0;*/
     qDebug() << "f="<< f;
-    qDebug() << "W="<<regModel->reg[bank][W];
-    regModel->reg[bank][f] = regModel->reg[bank][W];
-    //f = regModel->reg[bank][W];
+    qDebug() << "W="<<W;
+    regModel->reg[bank][f] = W;
+    //f = W;
     qDebug() << "f="<< regModel->reg[bank][f];
     //qDebug() << "f="<< f;
     PC();
@@ -518,15 +501,15 @@ void PIC::SUBWF(){
         W = f - W;}else if(d==1){
         f = f -W;}*/
     qDebug() << regModel->reg[bank][f];
-    qDebug() << regModel->reg[bank][W];
+    qDebug() << W;
 
 
     if(d==0){
-        regModel->reg[bank][W] = regModel->reg[bank][f] - regModel->reg[bank][W];
-        qDebug() << regModel->reg[bank][W];
+        W = regModel->reg[bank][f] - W;
+        qDebug() << W;
     }
     else if(d==1){
-        regModel->reg[bank][f] = regModel->reg[bank][f]-regModel->reg[bank][W];
+        regModel->reg[bank][f] = regModel->reg[bank][f]-W;
         qDebug() << regModel->reg[bank][f];
     }
 
@@ -561,10 +544,10 @@ void PIC::XORWF(){
     else if(d==1){
     f = W ^ f;}*/
 
-    int erg = regModel->reg[bank][W]^regModel->reg[bank][f];
+    int erg = W^regModel->reg[bank][f];
 
     if(d==0){
-    regModel->reg[bank][W] = erg;}
+    W = erg;}
     else if(d==1){
     regModel->reg[bank][f] = erg;}
 
@@ -595,7 +578,7 @@ void PIC::BSF(){
 
 void PIC::BTFSC(){
     qDebug() << "BTFSC";
-    if(b=0){
+    if(b==0){
         PC();
     }else{NOP();}
 
@@ -604,7 +587,7 @@ void PIC::BTFSC(){
 
 void PIC::BTFSS(){
     qDebug() << "BTFSS";
-    if(b=1){
+    if(b==1){
         PC();
     }else{NOP();}
 
@@ -614,8 +597,8 @@ void PIC::BTFSS(){
 void PIC::ADDLW(){
     qDebug() << "ADDLW";
 
-    int erg = regModel->reg[bank][W] + k;
-    regModel->reg[bank][W]=erg;
+    int erg = W + k;
+    W=erg;
 
     PC();
 }
@@ -623,8 +606,8 @@ void PIC::ADDLW(){
 void PIC::ANDLW(){
     qDebug() << "ANDLW";
 
-    int erg = regModel->reg[bank][W] && k;
-    regModel->reg[bank][W]=erg;
+    int erg = W && k;
+    W=erg;
 
     PC();
 }
@@ -661,8 +644,8 @@ void PIC::GOTO(){
 void PIC::XORLW(){
     qDebug() << "XORLW";
 
-    int erg = regModel->reg[bank][W] ^ k;
-    regModel->reg[bank][W]=erg;
+    int erg = W ^ k;
+    W=erg;
     ZBit(true);
     PC();
     }
@@ -670,8 +653,8 @@ void PIC::XORLW(){
 void PIC::SUBLW(){
     qDebug() << "SUBLW1";
 
-    int erg =k - regModel->reg[bank][W];
-    regModel->reg[bank][W]=erg;
+    int erg =k - W;
+    W=erg;
     ZBit(true);
     PC();
 }
@@ -695,7 +678,7 @@ void PIC::RETURN(){
 
 void PIC::RETURNLW(){
     qDebug() << "RETURNLW";
-    regModel->reg[bank][W] = k;
+    W = k;
     RETURN();
 
 
@@ -711,7 +694,7 @@ void PIC::RETURNFIE(){
 void PIC::MOVLW(){
     qDebug() << "MOVLW";
 
-    regModel->reg[bank][W]=k;
+    W=k;
     //don't cares = 0!
     PC();
 }
@@ -719,7 +702,7 @@ void PIC::MOVLW(){
 void PIC::IORLW(){
     qDebug() << "IORLW";
 
-    regModel->reg[bank][W]=regModel->reg[bank][W] || k;
+    W=W || k;
     ZBit(true);
     PC();
 }
