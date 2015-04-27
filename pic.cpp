@@ -361,9 +361,9 @@ void PIC::MOVWF(){
   /*f = W;
     w = 0x0;*/
 
-    qDebug() << regModel->reg[bank][W];
+    qDebug() << "W="<<regModel->reg[bank][W];
     regModel->reg[bank][f] = regModel->reg[bank][W];
-    qDebug() << regModel->reg[bank][f];
+    qDebug() << "f="<< regModel->reg[bank][f];
     PC();
 }
 
@@ -564,15 +564,15 @@ void PIC::ANDLW(){
 void PIC::CALL(){
     qDebug() << "CALL";
 
-    qDebug() << "pcl" + regModel->reg[bank][PCL];
-    qDebug() << "stack" + stack[stackpointer];
+    qDebug() << "pcl" << regModel->reg[bank][PCL];
+    qDebug() << "stack" << stack[stackpointer];
     stack[stackpointer] = regModel->reg[bank][PCL] + 1;
-    qDebug() << "stack" + stack[stackpointer];
-    qDebug() << "stackpointer" + stackpointer;
+    qDebug() << "stack" << stack[stackpointer];
+    qDebug() << "stackpointer" << stackpointer;
     stackpointer++;
-    qDebug() << "stackptr" + stackpointer;
+    qDebug() << "stackptr" << stackpointer;
     regModel->reg[bank][PCL] = k;
-    qDebug() << "pcl" + regModel->reg[bank][PCL];
+    qDebug() << "pcl" << regModel->reg[bank][PCL];
 }
 
 void PIC::CLRWDT(){
@@ -617,9 +617,9 @@ void PIC::SLEEP(){
 
 void PIC::RETURN(){
     qDebug() << "RETURN";
-    qDebug() << "pcl" + regModel->reg[bank][PCL];
+    qDebug() << "pcl" << regModel->reg[bank][PCL];
     regModel->reg[bank][PCL] = stack[stackpointer];
-    qDebug() << "pcl" + regModel->reg[bank][PCL];
+    qDebug() << "pcl" << regModel->reg[bank][PCL];
 
     stackpointer--;
 
