@@ -5,6 +5,9 @@
 #include "regmodel.h"
 #include "regmodeldlgt.h"
 
+typedef QVector<int> regs;
+
+
 class PIC : public QObject
 {
     Q_OBJECT
@@ -28,7 +31,8 @@ public:
 
     int W;
 
-    bool stop=false;
+    bool stop=true;
+    bool singleStep=false;
 
 
 
@@ -80,17 +84,21 @@ public:
  void ZBit(bool set);
  void DCBit(bool set);
  void CBit(bool set);
- void stopExec(bool stop);
- void decodeCmd(int pc);
+
  int getPC();
 signals:
- void pointer(RegModel *regModel, RegModelDlgt *regModelDlgt);
+ void pointer();
+ void finished();
 
 public slots:
  void init();
  void runCode();
  void updateReg();
+ void stopExec(bool stop);
+ void decodeCmd(int pc);
 
+
+ void finish();
 };
 
 #endif // PIC_H

@@ -8,6 +8,8 @@
 
 
 
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -16,26 +18,74 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionLaden, SIGNAL(triggered()), this, SLOT(loadFile()));
 
     UpdateRegTimer=new QTimer(this);
-    UpdateRegTimer->start(10000); //Einmal die Sekunde updaten
 
-    pic=new PIC(this);
+    qRegisterMetaType<regs>("regs");
+
+    pic=new PIC();
     thread=new QThread();
     pic->moveToThread(thread);
 
 
     connect(thread, SIGNAL(started()), pic, SLOT(init()));
+    connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(start()));
     connect(ui->pushButton, SIGNAL(clicked()), pic, SLOT(runCode()));
-    connect(pic, SIGNAL(pointer(RegModel*,RegModelDlgt*)), this, SLOT(setView(RegModel*, RegModelDlgt*)));
-    connect(UpdateRegTimer, SIGNAL(timeout()), pic, SLOT(updateReg()));
+    connect(pic, SIGNAL(pointer()), this, SLOT(setView()));
+    connect(UpdateRegTimer, SIGNAL(timeout()), this, SLOT(updateReg()));
+    connect(this, SIGNAL(aboutToQuit()), pic, SLOT(finish()));
+    connect(pic, SIGNAL(finished()), thread, SLOT(quit()));
+    connect(pic, SIGNAL(finished()), pic, SLOT(deleteLater()));
+    connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+
+    connect(ui->pushButtonStop, SIGNAL(clicked(bool)), this, SLOT(stop()));
+
+    connect(ui->pushButtonSingleStep, SIGNAL(clicked()), this, SLOT(singleStep()));
 
     connect(thread, SIGNAL(finished()), pic, SLOT(deleteLater()));
 
     thread->start();}
-void MainWindow::setView(RegModel* regModel, RegModelDlgt* regModelDlgt)
+
+
+
+void MainWindow::stop()
 {
-    ui->regView->setModel(regModel);
-    ui->regView->setItemDelegate(regModelDlgt);
+    pic->stop=true;
+
+    ui->pushButton->setEnabled(true);
+    ui->pushButtonStop->setEnabled(false);
+}
+
+void MainWindow::start()
+{
+    pic->stop=false;
+
+    ui->pushButton->setEnabled(false);
+    ui->pushButtonStop->setEnabled(true);
+}
+
+void MainWindow::singleStep()
+{
+    pic->singleStep=true;
+    pic->runCode();
+    qDebug() << "Signle Step = truuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuueeeeeeeeeeeeeeeeeeeeeee";
+}
+
+void MainWindow::updateReg()
+{
+    static int i=0;
+    pic->regModel->dataChanged(pic->regModel->index(0,0,QModelIndex()),pic->regModel->index(pic->regModel->rowCount()-1, pic->regModel->columnCount()-1,QModelIndex()));
+    qDebug()<< "Update" << i;
+    i++;
+}
+
+void MainWindow::setView()
+{
+//    regModel=pic->regModel;
+//    regModelDlgt= pic->regModelDlgt;
+    ui->regView->setModel(pic->regModel);
+    ui->regView->setItemDelegate(pic->regModelDlgt);
     ui->regView->resizeColumnsToContents();
+    UpdateRegTimer->start(1000); //Einmal die Sekunde updaten
+
 }
 
 MainWindow::~MainWindow()
@@ -211,5 +261,11 @@ void MainWindow::reset()
 void MainWindow::on_pushButton_clicked()
 {
 
-   // pic->decodeCmd();
+    // pic->decodeCmd();
+}
+
+void MainWindow::closeEvent(QCloseEvent *bar)
+{
+  emit aboutToQuit();
+    bar->accept();
 }

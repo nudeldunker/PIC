@@ -12,7 +12,7 @@ void PIC::init()
 {
     regModel=new RegModel();
     regModelDlgt=new RegModelDlgt();
-    emit pointer(regModel,regModelDlgt);
+    emit pointer();
 
 }
 
@@ -24,16 +24,21 @@ PIC::~PIC()
 void PIC::runCode()
 {
     int pc=getPC();
-    while( pc< m_CmdList.size() && !stop)
+    while( pc< m_CmdList.size() && (!stop || singleStep))
     {
         decodeCmd(pc);
         pc=getPC();
+
+        if(singleStep==true) qDebug()<<"---------------------------------------------------------------------------Single Step";
+
+        singleStep=false;
     }
 }
 
 void PIC::stopExec(bool stop)
 {
     stop=stop;
+    qDebug()<< stop;
 }
 
 int PIC::getPC()
@@ -45,7 +50,7 @@ void PIC::decodeCmd(int pc)
 {
 
 
-//    for( int i=0; i<m_CmdList.size(); i++)
+
 //    {
         k_long=m_CmdList[pc] & 0x7FF;
         k=m_CmdList[pc] & 0xFF;
@@ -137,6 +142,7 @@ void PIC::decodeCmd(int pc)
     else if((ShrtCmd) == 0x3800)
         IORLW();
 //}
+
 }
 
 
@@ -176,7 +182,7 @@ void PIC::ADDWF(){
     PC();
 
     //W = W + f;
-    //pc++;
+
 
 
 }
@@ -216,7 +222,6 @@ void PIC::CLRF(){
     ZBit(true);
     PC();
     //f  = 0x0;
-    //pc++;
 }
 
 void PIC::CLRW(){
@@ -225,7 +230,7 @@ void PIC::CLRW(){
     ZBit(true);
     PC();
     //W = 0x0;
-    //pc++;
+
 }
 
 void PIC::COMF(){
@@ -244,14 +249,14 @@ void PIC::COMF(){
     else regModel->reg[bank][f]=erg;
 
     //f = ~f;
-    //pc++;
+    PC();
 }
 
 void PIC::DECF(){
     qDebug() << "DECF";
 
     //f = f-1;
-    //pc++;
+    PC();
 }
 
 void PIC::DECFSZ(){
@@ -263,14 +268,14 @@ void PIC::DECFSZ(){
     } else{
         f=f;
     }*/
-//pc++;
+PC();
 }
 
 void PIC::INCF(){
     qDebug() << "INCF";
 
     //f = f+1;
-    //pc++;
+    PC();
 }
 
 void PIC::INCFSZ(){
@@ -281,14 +286,14 @@ void PIC::INCFSZ(){
      } else{
          f=f;
      }*/
-    //pc++;
+    PC();
 }
 
 void PIC::IORWF(){
     qDebug() << "IORWF";
 
     //W = W | f;
-    //pc++;
+    PC();
 }
 
 void PIC::MOVF(){
@@ -296,7 +301,7 @@ void PIC::MOVF(){
 
     /*x = f;
     f = 0x0;*/
-    //pc++;
+    PC();
 }
 
 void PIC::MOVWF(){
@@ -304,27 +309,27 @@ void PIC::MOVWF(){
 
   /*f = W;
     w = 0x0;*/
-    //pc++;
+    PC();
 }
 
 void PIC::NOP(){
     qDebug() << "NOP";
 
-    //pc++;
+    PC();
 
 }
 
 void PIC::RLF(){
     qDebug() << "RLF";
 
-    //pc++;
+    PC();
 
 }
 
 void PIC::RRF(){
     qDebug() << "RRF";
 
-    //pc++;
+    PC();
 
 }
 
@@ -332,28 +337,28 @@ void PIC::SUBWF(){
     qDebug() << "SUBWF";
 
   //f = f-W;
-    //pc++;
+    PC();
 }
 
 void PIC::SWAPF(){
     qDebug() << "SWAPF";
 
     //swap nibbles? watt?
-    //pc++;
+    PC();
 }
 
 void PIC::XORWF(){
     qDebug() << "XORWF";
 
     //W = W ^ f;
-    //pc++;
+    PC();
 }
 
 void PIC::BCF(){
     qDebug() << "BCF";
 
 
-    //pc++;
+    PC();
 
 }
 
@@ -361,21 +366,21 @@ void PIC::BCF(){
 void PIC::BSF(){
     qDebug() << "BSF";
 
-    //pc++;
+    PC();
 
 }
 
 void PIC::BTFSC(){
     qDebug() << "BTFSC";
 
-    //pc++;
+    PC();
 
 }
 
 void PIC::BTFSS(){
     qDebug() << "BTFSS";
 
-    //pc++;
+    PC();
 
 }
 
@@ -383,19 +388,19 @@ void PIC::ADDLW(){
     qDebug() << "ADDLW";
 
   //w = l + W;
-    //pc++;
+    PC();
 }
 
 void PIC::ANDLW(){
     qDebug() << "ANDLW";
 
     //w = l & W;
-    //pc++;
+    PC();
 }
 
 void PIC::CALL(){
     qDebug() << "CALL";
-    //pc++;
+    PC();
 
 
 }
@@ -404,13 +409,13 @@ void PIC::CLRWDT(){
     qDebug() << "CLRWDT";
 
     //wdt = 0x0;
-    //pc++;
+    PC();
 }
 
 void PIC::GOTO(){
     qDebug() << "GOTO";
 
-    //pc++;
+   // PC();
 
 }
 
@@ -418,48 +423,48 @@ void PIC::XORLW(){
     qDebug() << "XORLW";
 
     //l = l ^ W;
-    //pc++;
+    PC();
 }
 
 void PIC::SUBLW1(){
     qDebug() << "SUBLW1";
 
     // l = l-W;
-    //pc++;
+    PC();
 }
 
 void PIC::SUBLW2(){
     qDebug() << "SUBLW2";
 
     // l = l-W;
-    //pc++;
+    PC();
 }
 
 void PIC::SLEEP(){
     qDebug() << "SLEEP";
 
     system("pause");
-    //pc++;
+    PC();
 }
 
 void PIC::RETURN(){
     qDebug() << "RETURN";
 
-    //pc++;
+    PC();
 
 }
 
 void PIC::RETURNLW(){
     qDebug() << "RETURNLW";
 
-    //pc++;
+    PC();
 
 }
 
 void PIC::RETURNFIE(){
     qDebug() << "RETURNFIE";
 
-    //pc++;
+    PC();
 
 }
 
@@ -467,7 +472,7 @@ void PIC::MOVLW1(){
     qDebug() << "MOVLW1";
 
     //W = l;
-    //pc++;
+    PC();
     PC();
 }
 
@@ -475,28 +480,28 @@ void PIC::MOVLW2(){
     qDebug() << "MOVLW2";
 
     //W = l;
-    //pc++;
+    PC();
 }
 
 void PIC::MOVLW3(){
     qDebug() << "MOVLW3";
 
     //W = l;
-    //pc++;
+    PC();
 }
 
 void PIC::MOVLW4(){
     qDebug() << "MOVLW4";
 
     //W = l;
-    //pc++;
+    PC();
 }
 
 void PIC::IORLW(){
     qDebug() << "IORLW";
 
     //l = l | W;
-    //pc++;
+    PC();
 
 }
 
@@ -579,4 +584,9 @@ void PIC::PC()
 void PIC::updateReg()
 {
     regModel->dataChanged(regModel->index(0,0,QModelIndex()), regModel->index(regModel->rowCount()-1, regModel->columnCount()-1,QModelIndex()));
+}
+
+void PIC::finish()
+{
+    emit finished();
 }
