@@ -21,11 +21,11 @@ void PIC::decodeCmd()
     for( int i=0; i<m_CmdList.size(); i++)
     {
      int k_long=m_CmdList[i] & 0x7FF;
-     int k=m_CmdList[i] & 0xFF;
-     int f=m_CmdList[i] & 0x7F;
-     int d=m_CmdList[i] & 0x80;
-     int l=d;
-     int b=m_CmdList[i] & 0x380;
+     k=m_CmdList[i] & 0xFF;
+     f=m_CmdList[i] & 0x7F;
+     d=m_CmdList[i] & 0x80;
+     l=d;
+     b=m_CmdList[i] & 0x380;
 
      int ByteCmd=m_CmdList[i] & 0x3F00;
      int BitCmd=m_CmdList[i] & 0x3C00;
@@ -360,10 +360,12 @@ void PIC::MOVWF(){
 
   /*f = W;
     w = 0x0;*/
-
+    qDebug() << "f="<< f;
     qDebug() << "W="<<regModel->reg[bank][W];
     regModel->reg[bank][f] = regModel->reg[bank][W];
+    //f = regModel->reg[bank][W];
     qDebug() << "f="<< regModel->reg[bank][f];
+    //qDebug() << "f="<< f;
     PC();
 }
 
