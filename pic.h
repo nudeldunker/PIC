@@ -18,6 +18,7 @@ public:
     int l=0;
     int b=0;
 
+
     int bank=0;
 
     //RegModel *regmodel;
@@ -26,9 +27,12 @@ public:
     RegModel *regModel;
     RegModelDlgt *regModelDlgt;
 
+    //für CALL
+    int stackpointer = 0;
+    int stack[7];
 
 
-
+ void teststackptr();
  void decodeCmd();
  void ADDWF();
  void ANDWF();
@@ -59,7 +63,7 @@ public:
  void GOTO();
  void XORLW();
  void SUBLW();
-  void SLEEP();
+ void SLEEP();
  void RETURN();
  void RETURNLW();
  void RETURNFIE();
