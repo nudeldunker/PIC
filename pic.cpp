@@ -49,9 +49,6 @@ int PIC::getPC()
 
 void PIC::decodeCmd(int pc)
 {
-
-
-
 //    {
         k_long=m_CmdList[pc] & 0x7FF;
         k=m_CmdList[pc] & 0xFF;
@@ -156,6 +153,14 @@ void PIC::ADDWF(){
 
 int erg= W+regModel->reg[bank][f];
 
+/*if(erg > 255)
+{
+    CBit(true);
+    erg=0;
+}
+else CBit(false);*/
+ChkCBit(erg);
+/*if(regModel->reg[bank][W]<16 && erg>16)
     if(erg==0)
         ZBit(true);
     else ZBit(false);
@@ -171,8 +176,8 @@ if(W<16 && erg>16)
 {
    DCBit(true);
 }
-else DCBit(false);
-
+else DCBit(false);*/
+ChkDCBit(erg);
 if(d==0)
 {
     W=erg;
@@ -186,7 +191,7 @@ PC();
 void PIC::ANDWF(){
     qDebug() << "ANDWF";
 
-    int erg= W&regModel->reg[bank][f];
+    int erg= W&&regModel->reg[bank][f];
     if(erg > 255)
     {
         CBit(true);
@@ -597,9 +602,12 @@ void PIC::BTFSS(){
 void PIC::ADDLW(){
     qDebug() << "ADDLW";
 
+    int erg = regModel->reg[bank][W] + k;
+    regModel->reg[bank][W]=erg;
+    ChkCBit(erg);
+    ChkDCBit(erg);
     int erg = W + k;
     W=erg;
-
     PC();
 }
 
@@ -790,6 +798,25 @@ void PIC::teststackptr(){
         stackpointer = 0;
     }
 }
+
+int PIC::ChkCBit(int erg){
+
+    if(erg > 255)
+    {
+        CBit(true);
+        return erg=0;
+    }
+    else CBit(false);
+
+}
+
+int PIC::ChkDCBit(int erg){
+
+    if(regModel->reg[bank][W]<16 && erg>16)
+    {
+       DCBit(true);
+    }
+    else DCBit(false);
 
 void PIC::updateReg()
 {

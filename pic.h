@@ -36,6 +36,9 @@ public:
     int stackpointer = 0;
     int stack[7];
 
+ int ChkZBit(int erg);
+ int ChkDCBit(int erg);
+ int ChkCBit(int erg);
     bool stop=true;
     bool singleStep=false;
 
