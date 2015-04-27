@@ -602,11 +602,11 @@ void PIC::BTFSS(){
 void PIC::ADDLW(){
     qDebug() << "ADDLW";
 
-    int erg = regModel->reg[bank][W] + k;
+    //int erg = regModel->reg[bank][W] + k;
+    int erg = W + k;
     regModel->reg[bank][W]=erg;
     ChkCBit(erg);
     ChkDCBit(erg);
-    int erg = W + k;
     W=erg;
     PC();
 }
@@ -817,9 +817,8 @@ int PIC::ChkDCBit(int erg){
        DCBit(true);
     }
     else DCBit(false);
-
-void PIC::updateReg()
-{
+}
+void PIC::updateReg(){
     regModel->dataChanged(regModel->index(0,0,QModelIndex()), regModel->index(regModel->rowCount()-1, regModel->columnCount()-1,QModelIndex()));
 }
 
