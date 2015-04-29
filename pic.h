@@ -26,6 +26,8 @@ public:
 
     int W=0;
 
+    int erg = 0;
+
     //RegModel *regmodel;
     QList<int> m_CmdList;
 
@@ -36,9 +38,9 @@ public:
     int stackpointer = 0;
     int stack[7];
 
- int ChkZBit(int erg);
- int ChkDCBit(int erg);
- int ChkCBit(int erg);
+ void ChkZBit(int);
+ int ChkDCBit(int);
+ int ChkCBit(int);
     bool stop=true;
     bool singleStep=false;
 
