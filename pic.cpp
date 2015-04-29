@@ -57,6 +57,7 @@ void PIC::decodeCmd(int pc)
         k=m_CmdList[pc] & 0xFF;
         f=m_CmdList[pc] & 0x7F;
         d=m_CmdList[pc] & 0x80;
+        d=(d>>7); //Test
         l=d;
         b=m_CmdList[pc] & 0x380;
 
@@ -289,15 +290,16 @@ void PIC::DECFSZ(){
 
 
     if(d==1){
-     regModel->reg[bank][f]=erg;
-     if(regModel->reg[bank][f]==0){
-     PC();}else{NOP();}
-     }
-     else if(d==0){
-     W=erg;
-     if(W==0){
-     PC();}else{NOP();}
-     }
+        regModel->reg[bank][f]=erg;
+        if(regModel->reg[bank][f]==0){
+            PC();}
+        else{NOP();}
+    }
+    else if(d==0){
+        W=erg;
+        if(W==0){
+            PC();}else{NOP();}
+    }
 
 
 
