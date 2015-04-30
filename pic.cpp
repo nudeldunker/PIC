@@ -1,6 +1,7 @@
 #include "pic.h"
 #include "QDebug"
 #include "math.h"
+#include "interrupts.h"
 
 PIC::PIC(QObject *parent) : QObject(parent)
 {
@@ -569,7 +570,7 @@ void PIC::ANDLW(){
 
 void PIC::CALL(){
     qDebug() << "CALL";
-
+    PIC::teststackptr();
     qDebug() << "pcl" << regModel->reg[bank][PCL];
     qDebug() << "stack" << stack[stackpointer];
     stack[stackpointer] = regModel->reg[bank][PCL] + 1;
@@ -642,6 +643,7 @@ void PIC::RETURNLW(){
 void PIC::RETURNFIE(){
     qDebug() << "RETURNFIE";
 
+    Interrupts::SetGIE();
     PC();
 
 }

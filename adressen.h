@@ -1,6 +1,7 @@
 #ifndef ADRESSEN_H
 #define ADRESSEN_H
 
+#define TMR0 0x01
 #define PCL 0x02
 #define STATUS 0x03
 #define FSR 0x04
