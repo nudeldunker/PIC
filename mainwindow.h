@@ -8,6 +8,7 @@
 #include <QTimer>
 #include "regmodel.h"
 #include "regmodeldlgt.h"
+#include "codemodel.h"
 
 
 namespace Ui {
@@ -31,6 +32,8 @@ public:
     RegModel *regModel;
     RegModelDlgt *regModelDlgt;
 
+    CodeModel *codeModel;
+
     QTimer * UpdateRegTimer;
 public slots:
     void setView();
@@ -48,7 +51,7 @@ signals:
 private:
     Ui::MainWindow *ui;
     //QList<int> m_CmdList;
-    QList<QString> m_FileText;
+    //QList<QString> m_FileText;
     void closeEvent(QCloseEvent *bar);
 };
 
