@@ -90,7 +90,11 @@ public:
  void ZBit(bool set);
  void DCBit(bool set);
  void CBit(bool set);
+
  void teststackptr();
+ void pushstack();
+ void popstack();
+
  void SetPSA();
  void ClearPSA();
  void SetPS000();

@@ -56,16 +56,16 @@ void PIC::decodeCmd(int pc)
         qDebug() << pc << "PC";
 
         k_long=m_CmdList[pc] & 0x7FF;
-        //qDebug() << "CMDLIST" <<m_CmdList[pc];
+        qDebug() << "CMDLIST" <<m_CmdList[pc];
         k=m_CmdList[pc] & 0xFF;
-        //qDebug() << k << "k";
+        qDebug() << k << "k";
         f=m_CmdList[pc] & 0x7F;
-        //qDebug() << f <<"f";
+        qDebug() << f <<"f";
         d=m_CmdList[pc] & 0x80;
         d=(d>>7); //Test
         l=d;
         b=m_CmdList[pc] & 0x380;
-        //qDebug() << b << "b";
+        qDebug() << b << "b";
 
      int ByteCmd=m_CmdList[pc] & 0x3F00;
      //qDebug() << ByteCmd << "byteCMD";
@@ -78,7 +78,7 @@ void PIC::decodeCmd(int pc)
         ADDWF();
      else if(ByteCmd == 0x0500)
         ANDWF();
-     else if(ByteCmd == 0x0100)
+     else if(ByteCmd == 0x0180)
         CLRF();
      else if((m_CmdList[pc] & 0x3F80) == 0x0100)
         CLRW();
@@ -291,12 +291,20 @@ void PIC::DECFSZ(){
         regModel->reg[bank][f]=erg;
         if(regModel->reg[bank][f]==0){
             PC();}
-        else{NOP();}
+        else{
+            qDebug() << regModel->reg[bank][PCL] << "PC";
+            PC();
+            qDebug() << regModel->reg[bank][PCL] << "PC";
+            NOP();}
     }
     else if(d==0){
         W=erg;
         if(W==0){
-            PC();}else{NOP();}
+            PC();}else{
+            qDebug() << regModel->reg[bank][PCL] << "PC";
+            PC();
+            qDebug() << regModel->reg[bank][PCL] << "PC";
+            NOP();}
     }
 
 
@@ -573,16 +581,7 @@ void PIC::ANDLW(){
 
 void PIC::CALL(){
     qDebug() << "CALL";
-    PIC::teststackptr();
-    qDebug() << "pcl" << regModel->reg[bank][PCL];
-    qDebug() << "stack" << stack[stackpointer];
-    stack[stackpointer] = regModel->reg[bank][PCL] + 1;
-    qDebug() << "stack" << stack[stackpointer];
-    qDebug() << "stackpointer" << stackpointer;
-    stackpointer++;
-    qDebug() << "stackptr" << stackpointer;
-    regModel->reg[bank][PCL] = k;
-    qDebug() << "pcl" << regModel->reg[bank][PCL];
+    PIC::pushstack();
 }
 
 void PIC::CLRWDT(){
@@ -628,10 +627,10 @@ void PIC::SLEEP(){
 void PIC::RETURN(){
     qDebug() << "RETURN";
     qDebug() << "pcl" << regModel->reg[bank][PCL];
-    regModel->reg[bank][PCL] = stack[stackpointer];
+    PIC::popstack();
     qDebug() << "pcl" << regModel->reg[bank][PCL];
 
-    stackpointer--;
+
 
 }
 
@@ -743,11 +742,11 @@ void PIC::PC()
 }
 
 void PIC::teststackptr(){
-    if(stackpointer <= 0){
+    /*if(stackpointer <= 0){
         stackpointer = 7;
     }else if(stackpointer >= 7){
         stackpointer = 0;
-    }
+    }*/
 }
 
 int PIC::ChkCBit(int){
@@ -788,6 +787,41 @@ void PIC::ChkZBit(int){
 
 }
 
+void PIC::pushstack(){
+    int pctemp = regModel->reg[bank][PCL];
+    qDebug() << regModel->reg[bank][PCL] << "PCL";
+    qDebug() << pctemp << "pctemp";
+    pctemp = pctemp + 1;
+    qDebug() << pctemp << "pctemp";
+    qDebug() << stackpointer << "stackpointer";
+    if(stackpointer == 7){
+        stackpointer = 0;
+    qDebug() << stackpointer << "stackpointer";
+    }
+    qDebug() << stack[stackpointer] << "stackinhalt";
+    stack[stackpointer] = pctemp;
+    qDebug() << stack[stackpointer] << "stackinhalt";
+    qDebug() << stackpointer << "stackpointer";
+    stackpointer++;
+    qDebug() << stackpointer << "stackpointer";
+    regModel->reg[bank][PCL] = k;
+    qDebug() << "_________________________________";
+}
+
+void PIC::popstack(){
+    qDebug() << stackpointer << "stackpointer";
+    if(stackpointer == 0){
+        stackpointer = 7;
+        qDebug() << stackpointer << "stackpointer";
+    }
+    qDebug() << stack[stackpointer] << "stackinhalt";
+    stackpointer --;
+    regModel->reg[bank][PCL] = stack[stackpointer];
+    //stackpointer --;
+    qDebug() << stackpointer << "stackpointer";
+}
+
+//PSA - PreScaler Beziehungen
 void PIC::SetPSA(){
     //Prescaler hängt am Watchdog
     //TMR0 Verhältnis = 1:1
@@ -800,6 +834,9 @@ void PIC::ClearPSA(){
     einercomp = ~ einercomp;
     regModel->reg[1][OPTION] = regModel->reg[1][OPTION] & einercomp;
 }
+
+
+
 
 
 //Maskierung des PreScaler Verhältnisses
