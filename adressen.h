@@ -11,6 +11,8 @@
 #define PORTA 0x05
 #define PORTB 0x06
 
+#define OPTION 0x01
+
 
 
 

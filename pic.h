@@ -39,12 +39,12 @@ public:
     int stack[7];
 
  void ChkZBit(int);
- int ChkDCBit(int);
+ void ChkDCBit(int);
  int ChkCBit(int);
     bool stop=true;
     bool singleStep=false;
 
- void teststackptr();
+
 
 
  void decodeCmd();
@@ -90,6 +90,19 @@ public:
  void ZBit(bool set);
  void DCBit(bool set);
  void CBit(bool set);
+ void teststackptr();
+ void SetPSA();
+ void ClearPSA();
+ void SetPS000();
+ void SetPS001();
+ void SetPS010();
+ void SetPS011();
+ void SetPS100();
+ void SetPS101();
+ void SetPS110();
+ void SetPS111();
+
+
 
  int getPC();
 signals:

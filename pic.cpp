@@ -1,7 +1,7 @@
 #include "pic.h"
 #include "QDebug"
 #include "math.h"
-#include "interrupts.h"
+
 
 PIC::PIC(QObject *parent) : QObject(parent)
 {
@@ -52,27 +52,27 @@ void PIC::decodeCmd(int pc)
 {
 //    {
 
-        qDebug() << k_long << "klong";
+        //qDebug() << k_long << "klong";
         qDebug() << pc << "PC";
 
         k_long=m_CmdList[pc] & 0x7FF;
-        qDebug() << "CMDLIST" <<m_CmdList[pc];
+        //qDebug() << "CMDLIST" <<m_CmdList[pc];
         k=m_CmdList[pc] & 0xFF;
-        qDebug() << k << "k";
+        //qDebug() << k << "k";
         f=m_CmdList[pc] & 0x7F;
-        qDebug() << f <<"f";
+        //qDebug() << f <<"f";
         d=m_CmdList[pc] & 0x80;
         d=(d>>7); //Test
         l=d;
         b=m_CmdList[pc] & 0x380;
-        qDebug() << b << "b";
+        //qDebug() << b << "b";
 
      int ByteCmd=m_CmdList[pc] & 0x3F00;
-     qDebug() << ByteCmd << "byteCMD";
+     //qDebug() << ByteCmd << "byteCMD";
      int BitCmd=m_CmdList[pc] & 0x3C00;
-     qDebug() << BitCmd << "BitCMD";
+     //qDebug() << BitCmd << "BitCMD";
      int ShrtCmd=m_CmdList[pc] & 0x3800;
-     qDebug() << ShrtCmd << "ShrtCMD";
+     //qDebug() << ShrtCmd << "ShrtCMD";
 
      if(ByteCmd == 0x0700 )
         ADDWF();
@@ -406,7 +406,7 @@ void PIC::RLF(){
     qDebug() << "RLF";
     //Multiplizieren
 
-    int carryset = regModel->reg[bank][f] && 0x80;
+    int carryset = regModel->reg[bank][f] & 0x80;
     int carryget = regModel->reg[bank][STATUS]&0x1;
 
     regModel->reg[bank][f] = regModel->reg[bank][f]*2;
@@ -427,7 +427,7 @@ void PIC::RLF(){
 void PIC::RRF(){
     qDebug() << "RRF";
 
-    int carryset = regModel->reg[bank][f] && 0x80;
+    int carryset = regModel->reg[bank][f] & 0x80;
     int carryget = regModel->reg[bank][STATUS]&0x1;
 
     regModel->reg[bank][f] = regModel->reg[bank][f]/2;
@@ -547,8 +547,11 @@ void PIC::ADDLW(){
     qDebug() << "ADDLW";
 
     //int erg = regModel->reg[bank][W] + k;
+    qDebug() << W <<"W";
+    qDebug() << k <<"k";
     erg = W + k;
-    regModel->reg[bank][W]=erg;
+    qDebug() << erg << "erg";
+    W=erg;
     ChkCBit(erg);
     ChkDCBit(erg);
     ChkZBit(erg);
@@ -642,8 +645,6 @@ void PIC::RETURNLW(){
 
 void PIC::RETURNFIE(){
     qDebug() << "RETURNFIE";
-
-    Interrupts::SetGIE();
     PC();
 
 }
@@ -760,7 +761,7 @@ int PIC::ChkCBit(int){
 
 }
 
-int PIC::ChkDCBit(int){
+void PIC::ChkDCBit(int){
 
     if(regModel->reg[bank][W]<16 && erg>16)
     {
@@ -786,3 +787,58 @@ void PIC::ChkZBit(int){
         else ZBit(false);
 
 }
+
+void PIC::SetPSA(){
+    //Prescaler hängt am Watchdog
+    //TMR0 Verhältnis = 1:1
+    regModel->reg[1][OPTION] = regModel->reg[1][OPTION] | 0x4;
+}
+
+void PIC::ClearPSA(){
+    //Prescaler hängt an TMR0
+    int einercomp = 0x4;
+    einercomp = ~ einercomp;
+    regModel->reg[1][OPTION] = regModel->reg[1][OPTION] & einercomp;
+}
+
+
+//Maskierung des PreScaler Verhältnisses
+void PIC::SetPS000(){
+    //TMR0/1:2 WD/1:1
+    int einercomp = 0x7;
+    einercomp = ~ einercomp;
+    regModel->reg[1][OPTION] = regModel->reg[1][OPTION] & einercomp;
+}
+
+void PIC::SetPS001(){
+    //TMR0/1:4 WD/1:2
+    regModel->reg[1][OPTION] = regModel->reg[1][OPTION] | 0x1;
+}
+
+void PIC::SetPS010(){
+    //TMR0/1:8 WD/1:4
+    regModel->reg[1][OPTION] = regModel->reg[1][OPTION] | 0x2;
+}
+
+void PIC::SetPS011(){
+
+    regModel->reg[1][OPTION] = regModel->reg[1][OPTION] | 0x3;
+}
+
+void PIC::SetPS100(){
+    regModel->reg[1][OPTION] = regModel->reg[1][OPTION] | 0x4;
+}
+
+void PIC::SetPS101(){
+    regModel->reg[1][OPTION] = regModel->reg[1][OPTION] | 0x5;
+}
+
+void PIC::SetPS110(){
+    regModel->reg[1][OPTION] = regModel->reg[1][OPTION] | 0x6;
+}
+
+void PIC::SetPS111(){
+    //TMR0/1:256 WD/1:128
+    regModel->reg[1][OPTION] = regModel->reg[1][OPTION] | 0x7;
+}
+
