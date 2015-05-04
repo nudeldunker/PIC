@@ -11,11 +11,13 @@ HEADERS += \
     pic.h \
     regmodel.h \
     regmodeldlgt.h \
-    adressen.h
+    adressen.h \
+    codemodel.h
 
 SOURCES += \
     mainwindow.cpp \
     main.cpp \
     pic.cpp \
     regmodel.cpp \
-    regmodeldlgt.cpp
+    regmodeldlgt.cpp \
+    codemodel.cpp

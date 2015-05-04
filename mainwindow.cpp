@@ -42,7 +42,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(thread, SIGNAL(finished()), pic, SLOT(deleteLater()));
 
-    thread->start();}
+    thread->start();
+
+    codeModel=new CodeModel(this);
+}
 
 
 
@@ -73,6 +76,8 @@ void MainWindow::updateReg()
     static int i=0;
     pic->regModel->dataChanged(pic->regModel->index(0,0,QModelIndex()),pic->regModel->index(pic->regModel->rowCount()-1, pic->regModel->columnCount()-1,QModelIndex()));
     qDebug()<< "Update" << i;
+
+    ui->codeView->selectRow(codeModel->findPCIdx(pic->getPC()));
     i++;
 }
 
@@ -111,22 +116,27 @@ void MainWindow::loadFile()
             QTextStream StreamIn (&file);
             while (!StreamIn.atEnd())
             {
+
                 QString line= StreamIn.readLine();
+                QString PCounter= line.mid(0,4);
                 QString Cmd=line.mid(5,4);
+                QString Rest=line.mid(5, 500);
                 Cmd.remove(" ");
                 if(!Cmd.isEmpty())
                 {
                     pic->m_CmdList.append(Cmd.toInt(0, 16)); //base=16
                     //int k_long= m_CmdList[m_CmdList.size()-1] & 0b0000011111111111;
-
-
                 }
 
-                m_FileText.append(line);
+                codeModel->code.push_back(QStringList()<< "" <<PCounter << Rest);
+
+                //m_FileText.append(line);
             }
         }
 
         geladen=true;
+        ui->codeView->setModel(codeModel);
+        ui->codeView->resizeColumnsToContents();
     }
 
 
@@ -135,7 +145,7 @@ void MainWindow::loadFile()
 void MainWindow::reset()
 {
     pic->m_CmdList.clear();
-    m_FileText.clear();
+   // m_FileText.clear();
 }
 
 //MainWindow::getParameters(int idx)
