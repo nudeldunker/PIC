@@ -1,6 +1,8 @@
 #include "pic.h"
+#include "codemodel.h"
 #include "QDebug"
 #include "math.h"
+
 
 PIC::PIC(QObject *parent) : QObject(parent)
 {
@@ -25,14 +27,25 @@ PIC::~PIC()
 void PIC::runCode()
 {
     int pc=getPC();
-    while( pc< m_CmdList.size() && (!stop || singleStep))
+
+    CodeModel* codeModel=this->parent()->findChild<CodeModel *>(QString("codeModel"));
+
+
+    while( pc< m_CmdList.size() && (!stop || singleStep) /* && codeModel->code[codeModel->findPCIdx(pc)][0].isEmpty()*/)
     {
+
         decodeCmd(pc);
         pc=getPC();
 
         if(singleStep==true) qDebug()<<"---------------------------------------------------------------------------Single Step";
 
         singleStep=false;
+
+        if(!codeModel->code[codeModel->findPCIdx(pc)][0].isEmpty())
+        {
+            qDebug() << "Breakpoint bei Programmzeile : "<<pc;
+            emit breakPoint();
+        }
     }
 }
 

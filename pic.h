@@ -95,6 +95,7 @@ public:
 signals:
  void pointer();
  void finished();
+ void breakPoint();
 
 public slots:
  void init();

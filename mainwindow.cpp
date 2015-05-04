@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     qRegisterMetaType<regs>("regs");
 
-    pic=new PIC();
+    pic=new PIC(this);
     thread=new QThread();
     pic->moveToThread(thread);
 
@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
 
     connect(ui->pushButtonStop, SIGNAL(clicked(bool)), this, SLOT(stop()));
+    connect(pic, SIGNAL(breakPoint()), this, SLOT(stop()));
 
     connect(ui->pushButtonSingleStep, SIGNAL(clicked()), this, SLOT(singleStep()));
 
@@ -45,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     thread->start();
 
     codeModel=new CodeModel(this);
+    codeModel->setObjectName("codeModel");
 }
 
 
