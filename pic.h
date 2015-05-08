@@ -22,6 +22,7 @@ public:
     int b=0;
 
 
+
     int bank=0;
 
     int W=0;
@@ -33,6 +34,11 @@ public:
 
     RegModel *regModel;
     RegModelDlgt *regModelDlgt;
+
+    //TMR0-WDT-Prescaler
+
+    int cycles = 0; //hier werden die durclaufenen Programmzyklen gezählt
+
 
     //für CALL
     int stackpointer = 0;
