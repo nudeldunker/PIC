@@ -1074,3 +1074,9 @@ void PIC::Tmr0overflow(){
 
 }
 
+void PIC:: SyncSpecialReg(){
+    if(bank == 0){
+
+    }
+}
+

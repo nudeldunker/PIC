@@ -69,6 +69,7 @@ public:
  void ChkIndirect();
  void SetBank();
  void SetRegister();
+ void SyncSpecialReg();
 
  void decodeCmd();
  void ADDWF();
