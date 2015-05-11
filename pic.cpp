@@ -67,6 +67,9 @@ void PIC::decodeCmd(int pc)
         b=m_CmdList[pc] & 0x380;
         //qDebug() << b << "b";
 
+        SetBank();
+        ChkIndirect();
+
      int ByteCmd=m_CmdList[pc] & 0x3F00;
      //qDebug() << ByteCmd << "byteCMD";
      int BitCmd=m_CmdList[pc] & 0x3C00;
@@ -118,7 +121,10 @@ void PIC::decodeCmd(int pc)
         BTFSC();
      else if(BitCmd == 0x1C00)
         BTFSS();
+     //ADDLW kann durch don't care Bit 3E bzw. 3F sein
      else if((m_CmdList[pc] & 0x3E00 ) == 0x3E00)
+        ADDLW();
+     else if((m_CmdList[pc] & 0x3F00 ) == 0x3F00)
         ADDLW();
      else if(ByteCmd == 0x3900)
         ANDLW();
@@ -165,19 +171,48 @@ void PIC::decodeCmd(int pc)
 
 }
 
+void PIC::ChkIndirect(){
+    if(f == 0x0){
+        f = regModel->reg[0][FSR];
+        qDebug() << "Indirect Bank-0 / f" << f;
+    }
+    if(f == 0x80){
+        f = regModel->reg[1][FSR];
+        qDebug() << "Indirect Bank-1 / f" << f;
+    }
 
+}
 
 void PIC::ADDWF(){
     qDebug() << "ADDWF";
 
-erg= W+regModel->reg[bank][f];
 
-if(erg > 255)
-{
-    erg=0;
+if(f == 0x03 | f == 0x83){
+    qDebug() << "Ziel ist Status Register";
+    qDebug() << W << " = W";
+    erg = W && 0xE0;
+    qDebug() << "W nach der Operation" << W;
+    qDebug() << regModel->reg[bank][f] << "Wert in f";
+    erg = erg + regModel->reg[bank][f];
+    qDebug() << "Wert in f nach Operation" << regModel->reg[bank][f];
+
+}else{
+    qDebug() << "W vorher" << W;
+    qDebug() << "Inhalt von f vorher" << regModel->reg[bank][f];
+    erg = W+regModel->reg[bank][f];
+    qDebug() << "Ergebnis" << erg;
 }
+
+if(erg >=256)
+{
+    qDebug() << "ergebnis war > 255";
+    erg =  erg - 256;
+    qDebug() << "ergebnis" << erg;
+}
+ChkZBit(erg);
 ChkCBit(erg);
 ChkDCBit(erg);
+qDebug() << d << "D";
 if(d==0)
 {
     W=erg;
@@ -191,10 +226,10 @@ PC();
 void PIC::ANDWF(){
     qDebug() << "ANDWF";
 
-    int erg= W&&regModel->reg[bank][f];
-    if(erg > 255)
+    int erg= W && regModel->reg[bank][f];
+    if(erg >=256)
     {
-        erg=0;
+        erg =  erg - 256;
     }
     ChkCBit(erg);
 
@@ -214,7 +249,11 @@ void PIC::ANDWF(){
 void PIC::CLRF(){
     qDebug() << "CLRF";
     qDebug() << f;
-    regModel->reg[bank][f]=0;
+    //status Register -> nur die obersten 3 Bit werden gecleared, der Rest bleibt unchanged.
+    if(f == 0x03 | f == 0x83){
+    regModel->reg[bank][f]=regModel->reg[bank][f] && 0x1F;
+    }else{
+    regModel->reg[bank][f]=0;}
     ZBit(true);
     PC();
 
@@ -239,8 +278,8 @@ void PIC::COMF(){
     erg = erg ^ 0xff;
     qDebug() << erg;
 
-    if(erg > 255){
-        erg = 0;
+    if(erg >=256){
+        erg =  erg - 256;
     }
 
     ChkZBit(erg);
@@ -261,7 +300,7 @@ void PIC::DECF(){
     qDebug() << erg;
 
     if(erg < 0){
-        erg = 255;
+        erg = 256 + erg;
     }
 
     ChkZBit(erg);
@@ -284,7 +323,7 @@ void PIC::DECFSZ(){
     qDebug() << erg;
 
     if(erg < 0){
-        erg = 255;
+        erg = 256 + erg;
     }
 
     ChkZBit(erg);
@@ -292,26 +331,16 @@ void PIC::DECFSZ(){
 
     if(d==1){
         regModel->reg[bank][f]=erg;
-        if(regModel->reg[bank][f]==0){
-            PC();}
-        else{
-            cycles++;
-            qDebug() << regModel->reg[bank][PCL] << "PC";
-            PC();
-            qDebug() << regModel->reg[bank][PCL] << "PC";
-            NOP();}
-    }
-    else if(d==0){
+        } else if(d==0){
         W=erg;
-        if(W==0){
-            PC();}else{
-            cycles++;
-            qDebug() << regModel->reg[bank][PCL] << "PC";
-            PC();
-            qDebug() << regModel->reg[bank][PCL] << "PC";
-            NOP();}
+        }
+    if(erg == 0){
+        cycles++;
+        PC();
+        NOP();
+    } else if(erg > 0){
+        PC();
     }
-
 
 
 }
@@ -378,8 +407,8 @@ void PIC::IORWF(){
     erg=regModel->reg[bank][f]||W;
     qDebug() << erg;
 
-    if(erg > 255){
-        erg = 0;
+    if(erg >=256){
+        erg =  erg - 256;
     }
     ChkZBit(erg);
 
@@ -395,7 +424,8 @@ void PIC::IORWF(){
 void PIC::MOVF(){
     qDebug() << "MOVF";
 
-    qDebug() << regModel->reg[bank][f];
+    qDebug() << f << "f";
+    qDebug() << regModel->reg[bank][f] << "inhalt f";
 
     if(d==0){
     W = regModel->reg[bank][f];}
@@ -404,6 +434,7 @@ void PIC::MOVF(){
     ZBit(true);}
 
     qDebug() << W;
+
 
     PC();
 }
@@ -417,8 +448,7 @@ void PIC::MOVWF(){
     qDebug() << "W="<< W;
     regModel->reg[bank][f] = W;
     //f = W;
-    qDebug() << "f="<< regModel->reg[bank][f];
-    qDebug() << "f="<< f;
+    qDebug() << "Zelle: " << f << "Inhalt: "<< regModel->reg[bank][f];
     PC();
 }
 
@@ -481,7 +511,7 @@ void PIC::SUBWF(){
     erg = regModel->reg[bank][f] - W;
 
     if(erg < 0){
-        erg = 255;
+        erg = 256 + erg;
         CBit(true);
     }else{CBit(false);}
 
@@ -542,7 +572,7 @@ void PIC::BCF(){
     //Verunden mit dem 1er-Complement von 2^b
     //f = f & ~pow(2,b);
     erg = pow(2,b);
-    erg = ~erg;
+    erg = erg ^ 0xFF;
     regModel->reg[bank][f] = regModel->reg[bank][f] && erg;
     PC();
 
@@ -588,8 +618,8 @@ void PIC::ADDLW(){
     qDebug() << W <<"W";
     qDebug() << k <<"k";
     erg = W + k;
-    if(erg > 255){
-        erg = 0;
+    if(erg >=256){
+        erg =  erg - 256;
         CBit(true);
 
     }else{CBit(false);}
@@ -639,8 +669,8 @@ void PIC::XORLW(){
     qDebug() << "XORLW";
 
     erg = W ^ k;
-    if(erg > 255){
-        erg = 0;
+    if(erg >=256){
+        erg =  erg - 256;
         CBit(true);
     }else{CBit(false);}
     W=erg;
@@ -654,7 +684,7 @@ void PIC::SUBLW(){
 
     erg =k - W;
     if(erg < 0){
-        erg = 255;
+        erg = 256 + erg;
         CBit(true);
     }else{CBit(false);}
     W=erg;
@@ -710,6 +740,18 @@ void PIC::IORLW(){
     W = erg;
     ChkZBit(erg);
     PC();
+}
+
+void PIC::SetBank(){
+
+    int helper = regModel->reg[bank][STATUS];
+    helper = helper && 0x20;
+    if(helper == 0x0){
+    bank = 0;}
+    else if(helper == 0x20){
+        bank = 1;
+    }
+
 }
 
 
@@ -789,17 +831,10 @@ void PIC::PC()
     PIC::cycles++;
 }
 
-void PIC::teststackptr(){
-    /*if(stackpointer <= 0){
-        stackpointer = 7;
-    }else if(stackpointer >= 7){
-        stackpointer = 0;
-    }*/
-}
 
 int PIC::ChkCBit(int){
 
-    if(erg > 255)
+    if(erg >=256)
     {
         CBit(true);
         return erg=0;

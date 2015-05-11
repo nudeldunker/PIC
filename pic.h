@@ -51,7 +51,8 @@ public:
     bool singleStep=false;
 
 
-
+ void ChkIndirect();
+ void SetBank();
 
  void decodeCmd();
  void ADDWF();
@@ -97,7 +98,6 @@ public:
  void DCBit(bool set);
  void CBit(bool set);
 
- void teststackptr();
  void pushstack();
  void popstack();
 
