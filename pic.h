@@ -35,12 +35,19 @@ public:
     RegModel *regModel;
     RegModelDlgt *regModelDlgt;
 
-    //TMR0-WDT-Prescaler
+
 
     int cycles = 0; //hier werden die durclaufenen Programmzyklen gezählt
 
+    //Prescaler
+    int PreScalerWert = 0;
+    int PreScalerCounter = 1;
+    bool PreScalerTmr0 = false;
 
-    //für CALL
+    //Tmr0
+    int LetzteFlanke = 0;
+
+    //CALL / RETURN
     int stackpointer = 0;
     int stack[7];
 
@@ -51,8 +58,17 @@ public:
     bool singleStep=false;
 
 
+ void getPreScaler();
+
+ void setTmr0();
+ void Tmr0Timer();
+ void Tmr0Counter();
+ void Tmr0overflow();
+ void Tmr0Increment();
+
  void ChkIndirect();
  void SetBank();
+ void SetRegister();
 
  void decodeCmd();
  void ADDWF();
@@ -103,14 +119,7 @@ public:
 
  void SetPSA();
  void ClearPSA();
- void SetPS000();
- void SetPS001();
- void SetPS010();
- void SetPS011();
- void SetPS100();
- void SetPS101();
- void SetPS110();
- void SetPS111();
+
 
 
 
