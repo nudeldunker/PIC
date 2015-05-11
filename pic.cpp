@@ -64,7 +64,9 @@ void PIC::decodeCmd(int pc)
         d=(d>>7); //Test
         l=d;
         b=m_CmdList[pc] & 0x380;
+        b = b / 128;
         qDebug() << b << "b";
+        qDebug() << PreScalerWert << "PreScalerWert";
 
         PIC::getPreScaler();
         PIC::SetBank();
@@ -78,6 +80,7 @@ void PIC::decodeCmd(int pc)
      qDebug() << BitCmd << "BitCMD";
      int ShrtCmd=m_CmdList[pc] & 0x3800;
      qDebug() << ShrtCmd << "ShrtCMD";
+
 
      if(ByteCmd == 0x0700 )
         ADDWF();
@@ -161,6 +164,8 @@ void PIC::decodeCmd(int pc)
 
     //zählt nach jeder Befehlsabarbeitung einen Programmzyklus hoch, bizyklische Befehle zählen zusätzlich während des Befehls rauf
      cycles++;
+     PreScalerCounter++;
+     SyncSpecialReg();
 
      //Diagnoseausgaben
      qDebug() << "---------------------------------";
@@ -343,6 +348,7 @@ void PIC::DECFSZ(){
         }
     if(erg == 0){
         cycles++;
+        PreScalerCounter;
         PC();
         NOP();
     } else if(erg > 0){
@@ -391,6 +397,7 @@ void PIC::INCFSZ(){
      if(regModel->reg[bank][f]==0){
      PC();}else{
          cycles++;
+         PreScalerCounter++;
          PC();
          NOP();}
      }
@@ -400,6 +407,7 @@ void PIC::INCFSZ(){
      PC();}
      else{
      cycles++;
+     PreScalerCounter++;
      PC();
      NOP();}
      }
@@ -592,8 +600,7 @@ void PIC::BSF(){
     //Verodern mit 2^b
     //f= f | pow(2,b);
     int reginhalt = regModel->reg[bank][f];
-    int temp = b / 128;
-    temp = pow(2,temp);
+    int temp = pow(2,b);
     qDebug() << temp << "temp";
     temp = reginhalt | temp;
     regModel->reg[bank][f]= temp;
@@ -602,20 +609,27 @@ void PIC::BSF(){
 
 void PIC::BTFSC(){
     qDebug() << "BTFSC";
-    if(b==0){
+    int ftemp = regModel->reg[bank][f];
+    int referenz = pow(2,b);
+    referenz = referenz ^ 0xFF;
+    ftemp = ftemp | referenz;
+    if(ftemp == referenz){
         cycles++;
+        PreScalerCounter++;
         PC();
         NOP();
-    }else{
-    PC();}
+    }else{PC();}
 
-
-}
+    }
 
 void PIC::BTFSS(){
     qDebug() << "BTFSS";
-    if(b==1){
+    int ftemp = regModel->reg[bank][f];
+    int referenz = pow(2,b);
+    ftemp = ftemp & referenz;
+    if(ftemp == referenz){
         cycles++;
+        PreScalerCounter++;
         PC();
         NOP();
     }else{PC();}
@@ -658,6 +672,7 @@ void PIC::ANDLW(){
 void PIC::CALL(){
     qDebug() << "CALL";
     cycles++;
+    PreScalerCounter++;
     PIC::pushstack();
 }
 
@@ -714,6 +729,7 @@ void PIC::RETURN(){
     qDebug() << "RETURN";
     qDebug() << "pcl" << regModel->reg[bank][PCL];
     cycles++;
+    PreScalerCounter++;
     PIC::popstack();
     qDebug() << "pcl" << regModel->reg[bank][PCL];
 
@@ -722,6 +738,7 @@ void PIC::RETURN(){
 void PIC::RETURNLW(){
     qDebug() << "RETURNLW";
     cycles++;
+    PreScalerCounter++;
     W = k;
     RETURN();
 
@@ -731,6 +748,7 @@ void PIC::RETURNLW(){
 void PIC::RETURNFIE(){
     qDebug() << "RETURNFIE";
     cycles++;
+    PreScalerCounter++;
     PC();
 
 }
@@ -847,7 +865,7 @@ void PIC::PC()
     }
 
     regModel->dataChanged(regModel->index(0,0, QModelIndex()), regModel->index(0,0, QModelIndex()));
-    PIC::cycles++;
+
 }
 
 
@@ -941,10 +959,11 @@ void PIC::ClearPSA(){
 
 void PIC::getPreScaler(){
     int cleanPS = regModel->reg[1][0x01];
-    qDebug() << "Option" << cleanPS << regModel->reg[1][0x01];
+    qDebug() << "cleanPS/OptionReg" << cleanPS << regModel->reg[1][0x01];
     cleanPS = cleanPS & 0x07;
-    qDebug() << "Option" << cleanPS;
+    qDebug() << "cleanPS maskiert/OptionReg" << cleanPS << regModel->reg[1][0x01];
     PreScalerWert = pow(2,cleanPS);
+    qDebug() << PreScalerWert << "PreScalerWert";
 }
 
 void PIC::setTmr0(){
@@ -957,15 +976,19 @@ void PIC::setTmr0(){
 
     //PreScaler am WDT-> Verhältnis 1:1
     if(0x08 == PSA){
+        qDebug() << "PreScalerTmr0 false";
         PreScalerTmr0 = false;
     }
     else{
+        qDebug() << "PreScalerTmr0 true";
         PreScalerTmr0 = true;
     }
 
     if(T0CS == 0x20){
+        qDebug() << "Tmr0 Counter";
         Tmr0Counter();
     }else if(T0CS == 0x00){
+        qDebug() << "Tmr0 Timer";
         Tmr0Timer();
     }
 
@@ -976,8 +999,8 @@ void PIC::Tmr0Timer(){
 
     //PreScaler am WDT-> Verhältnis 1:1
     if(PreScalerTmr0 == false){
-
     regModel->reg[1][TMR0] = regModel->reg[0][TMR0] ++;
+    qDebug() << "Tmr0 Timer 1:1" << regModel->reg[0][TMR0];
     }
     else{
     PIC::Tmr0Increment();
@@ -996,11 +1019,14 @@ void PIC::Tmr0Counter(){
 
     //1:1
     if(PreScalerTmr0 == false){
+    qDebug() << "Tmr0 Counter 1:1";
     //steigende Flanke 0->1
 
         if(Tmr0SE == 0x00){
             if(LetzteFlanke == 0){
+                qDebug() << "Tmr0 Counter letzte Flanke =0";
             if(AktuelleFlanke != LetzteFlanke){
+                qDebug() << "Tmr0 Counter letzte Flanke =0 Aktuell != Alt";
                 regModel->reg[0][TMR0] = regModel->reg[0][TMR0]++;
             }
 
@@ -1012,8 +1038,9 @@ void PIC::Tmr0Counter(){
    if(Tmr0SE == 0x10){
 
     if(LetzteFlanke == 1){
-
+    qDebug() << "Tmr0 Counter letzte Flanke =1";
        if(AktuelleFlanke != LetzteFlanke){
+           qDebug() << "Tmr0 Counter letzte Flanke =1 Aktuell != Alt";
            regModel->reg[0][TMR0] = regModel->reg[0][TMR0]++;
        }
     }
@@ -1026,10 +1053,13 @@ void PIC::Tmr0Counter(){
 
     //1:PreScalerWert
     if(PreScalerTmr0 == true){
+        qDebug() << "Tmr0 Counter PreScaler";
     //steigende Flanke 0->1
         if(Tmr0SE == 0x00){
             if(LetzteFlanke == 0){
+                qDebug() << "Tmr0 Counter PreScaler letzte Flanke =0";
                 if(AktuelleFlanke != LetzteFlanke){
+                    qDebug() << "Tmr0 Counter letzte Flanke =0 != Aktuell";
                     PIC::Tmr0Increment();
                 }
 
@@ -1041,8 +1071,9 @@ void PIC::Tmr0Counter(){
    if(Tmr0SE == 0x10){
 
         if(LetzteFlanke == 1){
-
+            //qDebug() << "Tmr0 Counter PreScaler letzte Flanke =1";
             if(AktuelleFlanke != LetzteFlanke){
+                //qDebug() << "Tmr0 Counter PreScaler letzte Flanke =1 != Aktuell";
                 PIC::Tmr0Increment();
             }
         }
@@ -1052,16 +1083,17 @@ void PIC::Tmr0Counter(){
    }
 
     LetzteFlanke = AktuelleFlanke;
-    PIC::Tmr0overflow();
+    //PIC::Tmr0overflow();
 }
 
 void PIC::Tmr0Increment(){
-    if(PreScalerCounter < PreScalerWert){
-        PreScalerCounter++;
-    }
-    else if(PreScalerCounter == PreScalerWert){
-        regModel->reg[0][TMR0] = regModel->reg[0][TMR0]++;
+    if(PreScalerCounter == (PreScalerWert*2)){
+        //qDebug() << PreScalerCounter << "PreScalerCounter";
+        int tempadd = regModel->reg[0][TMR0];
+        tempadd++;
+        regModel->reg[0][TMR0] = tempadd;
         PreScalerCounter = 0x00;
+        //qDebug() << PreScalerCounter << "PreScalerCounter 0x00";
     }
 }
 
@@ -1075,8 +1107,19 @@ void PIC::Tmr0overflow(){
 }
 
 void PIC:: SyncSpecialReg(){
-    if(bank == 0){
-
+    int ziel = 0x00;
+    if(bank == 0x00){
+        ziel = 0x01;
     }
+    if(bank == 0x01){
+        ziel = 0x00;
+    }
+
+    regModel->reg[ziel][PCL] = regModel->reg[bank][PCL];
+    regModel->reg[ziel][STATUS] = regModel->reg[bank][STATUS];
+    regModel->reg[ziel][FSR] = regModel->reg[bank][FSR];
+    regModel->reg[ziel][PCLATH] = regModel->reg[bank][PCLATH];
+    regModel->reg[ziel][INTCON] = regModel->reg[bank][INTCON];
+
 }
 

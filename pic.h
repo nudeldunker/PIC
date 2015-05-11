@@ -41,7 +41,7 @@ public:
 
     //Prescaler
     int PreScalerWert = 0;
-    int PreScalerCounter = 1;
+    int PreScalerCounter = 0;
     bool PreScalerTmr0 = false;
 
     //Tmr0
