@@ -51,14 +51,35 @@ public:
     int stackpointer = 0;
     int stack[7];
 
- void ChkZBit(int);
- void ChkDCBit(int);
- int ChkCBit(int);
+    //Laufzeit
+    double QuarzFreqzenz = 1000000;
+    double Laufzeit = 0;
+    int LaufzeitCounter = 0;
+
+    //RBBuffer
+    int RBAlt[8];
+
+    int RBAktuell[8];
+
     bool stop=true;
     bool singleStep=false;
 
 
+ void ChkZBit(int);
+ void ChkDCBit(int);
+ int ChkCBit(int);
+
+ void InterruptAnalyzer();
+ void RunInterrupt();
+ void RBPeakAnalyzer();
+ void SetRBInterruptFlag();
+ void SetINTFFlag();
+
  void getPreScaler();
+
+ void LaufZeit();
+ void ResetLaufZeit();
+ void IncrementCycles();
 
  void setTmr0();
  void Tmr0Timer();

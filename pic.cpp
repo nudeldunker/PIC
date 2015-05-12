@@ -163,9 +163,13 @@ void PIC::decodeCmd(int pc)
         IORLW();
 
     //zählt nach jeder Befehlsabarbeitung einen Programmzyklus hoch, bizyklische Befehle zählen zusätzlich während des Befehls rauf
-     cycles++;
+     PIC::IncrementCycles();
+     PIC::LaufZeit();
      PreScalerCounter++;
-     SyncSpecialReg();
+     PIC::SyncSpecialReg();
+     PIC::RBPeakAnalyzer();
+     PIC::InterruptAnalyzer();
+
 
      //Diagnoseausgaben
      qDebug() << "---------------------------------";
@@ -198,7 +202,7 @@ void PIC::ADDWF(){
 if(f == 0x03 | f == 0x83){
     qDebug() << "Ziel ist Status Register";
     qDebug() << W << " = W";
-    erg = W && 0xE0;
+    erg = W & 0xE0;
     qDebug() << "W nach der Operation" << W;
     qDebug() << regModel->reg[bank][f] << "Wert in f";
     erg = erg + regModel->reg[bank][f];
@@ -263,7 +267,7 @@ void PIC::CLRF(){
     qDebug() << f;
     //status Register -> nur die obersten 3 Bit werden gecleared, der Rest bleibt unchanged.
     if(f == 0x03 | f == 0x83){
-    regModel->reg[bank][f]=regModel->reg[bank][f] && 0x1F;
+    regModel->reg[bank][f]=regModel->reg[bank][f] & 0x1F;
     }else{
     regModel->reg[bank][f]=0;}
     ZBit(true);
@@ -347,8 +351,8 @@ void PIC::DECFSZ(){
         W=erg;
         }
     if(erg == 0){
-        cycles++;
-        PreScalerCounter;
+        IncrementCycles();
+        PreScalerCounter++;
         PC();
         NOP();
     } else if(erg > 0){
@@ -396,7 +400,7 @@ void PIC::INCFSZ(){
      regModel->reg[bank][f]=erg;
      if(regModel->reg[bank][f]==0){
      PC();}else{
-         cycles++;
+         IncrementCycles();
          PreScalerCounter++;
          PC();
          NOP();}
@@ -406,7 +410,7 @@ void PIC::INCFSZ(){
      if(W==0){
      PC();}
      else{
-     cycles++;
+     IncrementCycles();
      PreScalerCounter++;
      PC();
      NOP();}
@@ -441,15 +445,15 @@ void PIC::MOVF(){
 
     qDebug() << f << "f";
     qDebug() << regModel->reg[bank][f] << "inhalt f";
-
+    int erg = regModel->reg[bank][f];
     if(d==0){
-    W = regModel->reg[bank][f];}
+    W = erg;}
     else if(d==1){
-    regModel->reg[bank][f] = regModel->reg[bank][f];
-    ZBit(true);}
+    regModel->reg[bank][f] = erg;
+    }
 
-    qDebug() << W;
-
+//    qDebug() << W;
+    ChkZBit(erg);
 
     PC();
 }
@@ -614,7 +618,7 @@ void PIC::BTFSC(){
     referenz = referenz ^ 0xFF;
     ftemp = ftemp | referenz;
     if(ftemp == referenz){
-        cycles++;
+        IncrementCycles();
         PreScalerCounter++;
         PC();
         NOP();
@@ -628,7 +632,7 @@ void PIC::BTFSS(){
     int referenz = pow(2,b);
     ftemp = ftemp & referenz;
     if(ftemp == referenz){
-        cycles++;
+        IncrementCycles();
         PreScalerCounter++;
         PC();
         NOP();
@@ -671,7 +675,7 @@ void PIC::ANDLW(){
 
 void PIC::CALL(){
     qDebug() << "CALL";
-    cycles++;
+    IncrementCycles();
     PreScalerCounter++;
     PIC::pushstack();
 }
@@ -728,7 +732,7 @@ void PIC::SLEEP(){
 void PIC::RETURN(){
     qDebug() << "RETURN";
     qDebug() << "pcl" << regModel->reg[bank][PCL];
-    cycles++;
+    IncrementCycles();
     PreScalerCounter++;
     PIC::popstack();
     qDebug() << "pcl" << regModel->reg[bank][PCL];
@@ -737,20 +741,18 @@ void PIC::RETURN(){
 
 void PIC::RETURNLW(){
     qDebug() << "RETURNLW";
-    cycles++;
-    PreScalerCounter++;
     W = k;
-    RETURN();
+    PIC::RETURN();
 
 
 }
 
 void PIC::RETURNFIE(){
     qDebug() << "RETURNFIE";
-    cycles++;
-    PreScalerCounter++;
-    PC();
-
+    int intcon = regModel->reg[bank][INTCON];
+    intcon = intcon | 0x80;
+    regModel->reg[bank][INTCON] = intcon;
+    PIC::RETURN();
 }
 
 void PIC::MOVLW(){
@@ -1087,7 +1089,7 @@ void PIC::Tmr0Counter(){
 }
 
 void PIC::Tmr0Increment(){
-    if(PreScalerCounter == (PreScalerWert*2)){
+    if(PreScalerCounter == ((PreScalerWert*2)-1)){
         //qDebug() << PreScalerCounter << "PreScalerCounter";
         int tempadd = regModel->reg[0][TMR0];
         tempadd++;
@@ -1101,6 +1103,8 @@ void PIC::Tmr0overflow(){
     if(regModel->reg[0][TMR0] >= 0x100){
         regModel->reg[0][TMR0] = regModel->reg[0][TMR0] - 256;
         regModel->reg[bank][INTCON] = regModel->reg[bank][INTCON] | 0x04;
+        PIC::ZBit(true);
+
     }
 
 
@@ -1123,3 +1127,131 @@ void PIC:: SyncSpecialReg(){
 
 }
 
+void PIC::IncrementCycles(){
+    cycles++;
+    LaufzeitCounter++;
+    qDebug() << cycles << "cycles" << LaufzeitCounter << "LaufzeitCounter";
+}
+
+void PIC::LaufZeit(){
+    Laufzeit = LaufzeitCounter / QuarzFreqzenz;
+    Laufzeit = Laufzeit * 4;
+    qDebug() << Laufzeit << "Laufzeit in Sekunden";
+}
+
+void PIC::InterruptAnalyzer(){
+    int intcon = regModel->reg[bank][INTCON];
+    int GIE = intcon & 0x80;
+    int T0IE = intcon & 0x20;
+    int T0IF = intcon & 0x04;
+    int INTE = intcon & 0x10;
+    int INTF = intcon & 0x02;
+    int RBIE = intcon & 0x08;
+    int RBIF = intcon & 0x01;
+
+    if(GIE == 0x80){
+        qDebug() << "GIE gesetzt" << GIE;
+        if(T0IE == 0x20){
+            qDebug() << "T0IE scharf" << T0IE;
+            if(T0IF == 0x04){
+                qDebug() << "T0IF gesetzt" << T0IF;
+                RunInterrupt();
+            }
+
+        }
+        if(RBIE == 0x08){
+            qDebug() << "RBIE scharf" << RBIE;
+            if(RBIF == 0x01){
+                qDebug() << "RBIF gesetzt" << RBIF;
+                RunInterrupt();
+            }
+        }
+        if(INTE == 0x10){
+            qDebug() << "INTE extern scharf" << INTE;
+            if(INTF == 0x02){
+                qDebug() << "INTF Flag gesetzt" << INTF;
+                RunInterrupt();
+            }
+        }
+
+    }
+}
+
+void PIC::RunInterrupt(){
+    //GIE claeren -> Verunden mit 0x80 Kehrwert
+    int disableGIE = 0x80 ^ 0xFF;
+    int GIE = regModel->reg[bank][INTCON];
+    GIE = GIE & disableGIE;
+    regModel->reg[bank][INTCON] = GIE;
+    //PC = 0004h
+    k = 0x04;
+    PIC::CALL();
+}
+
+void PIC::RBPeakAnalyzer(){
+    int peakMode = regModel->reg[1][OPTION];
+    peakMode = peakMode & 0xD0;
+    int portB = regModel->reg[0][PORTB];
+
+    //steigende Flanke
+    if(peakMode == 0xD0){
+        for(int i=0; i<=7; i++){
+            //Alter Wert = 0
+            if(RBAlt[i] == 0){
+                //Aktuelle Werte maskieren
+                for(int i=0; i<=7; i++){
+                    int ref = pow(2,i);
+                    RBAktuell[i] = portB & ref;
+                }
+                //Bits auf Änderung Prüfen
+                if(RBAlt[0] != RBAktuell[0]){
+                    SetINTFFlag();
+                }
+                for(i=1; i<=7; i++){
+                    if(RBAlt[i] != RBAktuell[i]){
+                    SetRBInterruptFlag();
+                    }
+                }
+            }
+        }
+    }
+
+    //fallende Flanke
+    if(peakMode & 0xD0 == 0x00){
+        for(int i=0; i<=7; i++){
+            //Alter Wert = 0
+            if(RBAlt[i] == 1){
+                //Aktuelle Werte maskieren
+                for(int i=0; i<=7; i++){
+                    int ref = pow(2,i);
+                    ref = ref ^ 0xFF;
+                    RBAktuell[i] = portB & ref;
+                }
+                //Bits auf Änderung Prüfen
+                if(RBAlt[0] != RBAktuell[0]){
+                    SetINTFFlag();
+                }
+                for(i=1; i<=7; i++){
+                    if(RBAlt[i] != RBAktuell[i]){
+                    SetRBInterruptFlag();
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+
+}
+
+void PIC::SetINTFFlag(){
+    int intcon = regModel->reg[bank][INTCON];
+    intcon = intcon | 0x02;
+}
+
+void PIC::SetRBInterruptFlag(){
+    int intcon = regModel->reg[bank][INTCON];
+    intcon = intcon | 0x01;
+}
