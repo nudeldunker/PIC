@@ -1239,11 +1239,6 @@ void PIC::RBPeakAnalyzer(){
             }
         }
     }
-
-
-
-
-
 }
 
 void PIC::SetINTFFlag(){
