@@ -65,9 +65,9 @@ public:
     int tacktflankealt = 0;
 
     //RBBuffer
-    int RBAlt[8];
+    int RBAlt[8] = {0,0,0,0,0,0,0,0};
 
-    int RBAktuell[8];
+    int RBAktuell[8] = {0,0,0,0,0,0,0,0};
 
     bool stop=true;
     bool singleStep=false;

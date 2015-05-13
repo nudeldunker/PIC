@@ -1195,47 +1195,33 @@ void PIC::RunInterrupt(){
 void PIC::RBPeakAnalyzer(){
     int peakMode = regModel->reg[1][OPTION];
     peakMode = peakMode & 0x40;
+    int refPeak = 0;
     int portB = regModel->reg[0][PORTB];
+    qDebug() << peakMode << "PeakMode / 16=steigend / 0=fallend";
 
-    //steigende Flanke
+    //soll auf steigende oder fallende Flanke reagiert werden?
     if(peakMode == 0x40){
-        for(int i=0; i<=7; i++){
-            //Alter Wert = 0
-            if(RBAlt[i] == 0){
-                //Aktuelle Werte maskieren
-                for(int i=0; i<=7; i++){
-                    int ref = pow(2,i);
-                    RBAktuell[i] = portB & ref;
-                    qDebug() << RBAktuell[i] << "RBAKTUELL" << portB<<"PortB";
-                }
-                //Bits auf Änderung Prüfen
-                qDebug() << RBAlt[0] << RBAktuell[0] << "RBALT, Aktuell steigend";
-                if(RBAlt[0] != RBAktuell[0]){
-                    SetINTFFlag();
-                }
-                for(i=1; i<=7; i++){
-                    if(RBAlt[i] != RBAktuell[i]){
-                    SetRBInterruptFlag();
-                    }
-                }
-            }
-        }
+        refPeak = 1;
+    }
+    else{refPeak = 0;}
+
+
+    //Aktuelle Werte maskieren
+    for(int i=0; i<=7; i++){
+    int ref = pow(2,i);
+    if(refPeak == 1){
+        ref = ref ^ 0xFF;
+    }
+    RBAktuell[i] = portB & ref;
+    qDebug() << RBAktuell[i] << "RBAKTUELL" << portB<<"PortB";
     }
 
-    //fallende Flanke
-    if(peakMode == 0x00){
-        for(int i=0; i<=7; i++){
-            //Alter Wert = 0
-            if(RBAlt[i] == 1){
-                //Aktuelle Werte maskieren
-                for(int i=0; i<=7; i++){
-                    int ref = pow(2,i);
-                    ref = ref ^ 0xFF;
-                    RBAktuell[i] = portB & ref;
-                    qDebug() << RBAktuell[i] << "RBAKTUELL" << portB<<"PortB";
-                }
+    for(int i=0; i<=7; i++){
+    //abprüfen ob alter Wert der gewünschten Flanke entspricht
+    if(RBAlt[i] == refPeak){
+
                 //Bits auf Änderung Prüfen
-                qDebug() << RBAlt[0] << RBAktuell[0] << "RBALT, Aktuell fallend";
+                qDebug() << RBAlt[0] << RBAktuell[0] << "Bitänderungen";
                 if(RBAlt[0] != RBAktuell[0]){
                     SetINTFFlag();
                 }
@@ -1245,12 +1231,14 @@ void PIC::RBPeakAnalyzer(){
                     }
                 }
             }
-        }
-    }
+     }
+
+
+    //Aktueller Wert in Alten Wert für nächsten Flankentest schreiben
     for(int i=0; i<=7; i++){
         RBAlt[i] = RBAktuell[i];
         qDebug() << RBAlt[i] << "RBAlt" << i;
-        qDebug() << RBAlt[i] << "RBAlt" << i;
+        qDebug() << RBAktuell[i] << "RBAktuell" << i;
 
         }
 }
