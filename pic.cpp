@@ -163,6 +163,7 @@ void PIC::decodeCmd(int pc)
         IORLW();
 
     //zählt nach jeder Befehlsabarbeitung einen Programmzyklus hoch, bizyklische Befehle zählen zusätzlich während des Befehls rauf
+     PIC::ExtClock();
      PIC::IncrementCycles();
      PIC::LaufZeit();
      PreScalerCounter++;
@@ -591,8 +592,11 @@ void PIC::BCF(){
     //Verunden mit dem 1er-Complement von 2^b
     //f = f & ~pow(2,b);
     erg = pow(2,b);
+    qDebug() << erg << "erg pow(2,b)";
     erg = erg ^ 0xFF;
+    qDebug() << regModel->reg[bank][f] << "inhalt f vorher";
     regModel->reg[bank][f] = regModel->reg[bank][f] & erg;
+    qDebug() << regModel->reg[bank][f] << "inhalt f später";
     PC();
 
 }
@@ -1016,7 +1020,7 @@ void PIC::Tmr0Timer(){
 
 
 void PIC::Tmr0Counter(){
-    int AktuelleFlanke = regModel->reg[0][0x05] & 0x20;
+    int AktuelleFlanke = regModel->reg[0][0x05] & 0x10;
     int Tmr0SE = regModel->reg[1][OPTION] & 0x10;
 
     //1:1
@@ -1190,11 +1194,11 @@ void PIC::RunInterrupt(){
 
 void PIC::RBPeakAnalyzer(){
     int peakMode = regModel->reg[1][OPTION];
-    peakMode = peakMode & 0xD0;
+    peakMode = peakMode & 0x40;
     int portB = regModel->reg[0][PORTB];
 
     //steigende Flanke
-    if(peakMode == 0xD0){
+    if(peakMode == 0x40){
         for(int i=0; i<=7; i++){
             //Alter Wert = 0
             if(RBAlt[i] == 0){
@@ -1202,8 +1206,10 @@ void PIC::RBPeakAnalyzer(){
                 for(int i=0; i<=7; i++){
                     int ref = pow(2,i);
                     RBAktuell[i] = portB & ref;
+                    qDebug() << RBAktuell[i] << "RBAKTUELL" << portB<<"PortB";
                 }
                 //Bits auf Änderung Prüfen
+                qDebug() << RBAlt[0] << RBAktuell[0] << "RBALT, Aktuell steigend";
                 if(RBAlt[0] != RBAktuell[0]){
                     SetINTFFlag();
                 }
@@ -1217,7 +1223,7 @@ void PIC::RBPeakAnalyzer(){
     }
 
     //fallende Flanke
-    if(peakMode & 0xD0 == 0x00){
+    if(peakMode == 0x00){
         for(int i=0; i<=7; i++){
             //Alter Wert = 0
             if(RBAlt[i] == 1){
@@ -1226,8 +1232,10 @@ void PIC::RBPeakAnalyzer(){
                     int ref = pow(2,i);
                     ref = ref ^ 0xFF;
                     RBAktuell[i] = portB & ref;
+                    qDebug() << RBAktuell[i] << "RBAKTUELL" << portB<<"PortB";
                 }
                 //Bits auf Änderung Prüfen
+                qDebug() << RBAlt[0] << RBAktuell[0] << "RBALT, Aktuell fallend";
                 if(RBAlt[0] != RBAktuell[0]){
                     SetINTFFlag();
                 }
@@ -1239,14 +1247,45 @@ void PIC::RBPeakAnalyzer(){
             }
         }
     }
+    for(int i=0; i<=7; i++){
+        RBAlt[i] = RBAktuell[i];
+        qDebug() << RBAlt[i] << "RBAlt" << i;
+        qDebug() << RBAlt[i] << "RBAlt" << i;
+
+        }
 }
 
 void PIC::SetINTFFlag(){
     int intcon = regModel->reg[bank][INTCON];
     intcon = intcon | 0x02;
+    regModel->reg[bank][INTCON] = intcon;
+    qDebug() << "INTF scharf";
 }
 
 void PIC::SetRBInterruptFlag(){
     int intcon = regModel->reg[bank][INTCON];
     intcon = intcon | 0x01;
+    regModel->reg[bank][INTCON] = intcon;
 }
+
+void PIC::ExtClock(){
+    int helper = 0;
+    int tacktFlankeAktuell = regModel->reg[tacktAdresseBank][tacktAdresseZelle];
+    helper = pow(2,tacktAdresseBit);
+    tacktFlankeAktuell = tacktFlankeAktuell & helper;
+    if(PIC::tackt == true){
+            if(tacktFlankeAktuell == helper){
+            qDebug() << "war gesetzt";
+            qDebug() << tacktFlankeAktuell << "tfa";
+            int folgetackt = 0x00;
+            regModel->reg[tacktAdresseBank][tacktAdresseZelle] = regModel->reg[tacktAdresseBank][tacktAdresseZelle] & folgetackt;
+            qDebug() << folgetackt << "folgetackt";
+            }
+            else{
+            regModel->reg[tacktAdresseBank][tacktAdresseZelle] = regModel->reg[tacktAdresseBank][tacktAdresseZelle] | helper;
+            qDebug() << "war nicht gesetzt" << helper;
+            qDebug() << regModel->reg[tacktAdresseBank][tacktAdresseZelle];
+            }
+        }
+
+    }

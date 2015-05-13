@@ -4,6 +4,7 @@
 #include <QObject>
 #include "regmodel.h"
 #include "regmodeldlgt.h"
+#include "strings.h"
 
 typedef QVector<int> regs;
 
@@ -56,6 +57,13 @@ public:
     double Laufzeit = 0;
     int LaufzeitCounter = 0;
 
+    //externer Tackt
+    bool tackt = true;
+    int tacktAdresseBank = 0;
+    int tacktAdresseZelle = 0x06;
+    int tacktAdresseBit = 0;
+    int tacktflankealt = 0;
+
     //RBBuffer
     int RBAlt[8];
 
@@ -74,6 +82,8 @@ public:
  void RBPeakAnalyzer();
  void SetRBInterruptFlag();
  void SetINTFFlag();
+
+ void ExtClock();
 
  void getPreScaler();
 
