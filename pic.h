@@ -38,7 +38,7 @@ public:
 
 
 
-    int cycles = 0; //hier werden die durclaufenen Programmzyklen gezählt
+    int cycles = 0; //hier werden die durchlaufenen Programmzyklen gezählt
 
     //Prescaler
     int PreScalerWert = 0;

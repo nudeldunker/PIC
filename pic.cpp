@@ -918,18 +918,6 @@ void PIC::finish()
     emit finished();
 }
 
-
-void PIC::ChkZBit(int)
-{
-    if(erg==0){
-    ZBit(true);
-    }
-    else {ZBit(false);}
-}
-
-
-
-
 void PIC::pushstack(){
     int pctemp = regModel->reg[bank][PCL];
     qDebug() << regModel->reg[bank][PCL] << "PCL";
@@ -1047,12 +1035,12 @@ void PIC::Tmr0Timer(){
 
 
 //Maskierung des PreScaler Verhältnisses
-void PIC::SetPS000(){
+/*void PIC::SetPS000(){
     //TMR0/1:2 WD/1:1
     int einercomp = 0x7;
     einercomp = einercomp ^ 0xFF;
     regModel->reg[1][OPTION] = regModel->reg[1][OPTION] & einercomp;
-}
+}*/
 
 
 
