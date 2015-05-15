@@ -280,3 +280,48 @@ void MainWindow::closeEvent(QCloseEvent *bar)
   emit aboutToQuit();
     bar->accept();
 }
+
+void MainWindow::on_Quarzfrequenz_returnPressed()
+{
+    qDebug() << pic->QuarzFreqzenz << "QuarzFrequenz vorher";
+
+    QString qfinput = ui->Quarzfrequenz->text();
+    pic->QuarzFreqzenz = qfinput.toDouble();
+    qDebug() << pic->QuarzFreqzenz << "QuarzFrequenz nachher";
+}
+
+void MainWindow::on_taktstate_pressed()
+{
+    if(pic->tackt == false){
+        qDebug() << pic->tackt << "takt an";
+        pic->tackt =true;}
+    else if(pic->tackt == true){
+        qDebug() << pic->tackt << "takt aus";
+        pic->tackt =false;}
+    }
+
+
+
+void MainWindow::on_taktbank_returnPressed()
+{
+    qDebug() << pic->tacktAdresseBank << "tacktAdresseBank vorher";
+    QString qfinput = ui->taktbank->text();
+    pic->tacktAdresseBank = qfinput.toInt();
+    qDebug() << pic->tacktAdresseBank << "tacktAdresseBank nachher";
+}
+
+void MainWindow::on_taktregister_returnPressed()
+{
+    qDebug() << pic->tacktAdresseZelle << "taktregister vorher";
+    QString qfinput = ui->taktregister->text();
+    pic->tacktAdresseZelle = qfinput.toInt();
+    qDebug() << pic->tacktAdresseZelle << "tacktAdresseZelle nachher";
+}
+
+void MainWindow::on_taktbit_returnPressed()
+{
+    qDebug() << pic->tacktAdresseBit << "taktbit vorher";
+    QString qfinput = ui->taktbit->text();
+    pic->tacktAdresseBit = qfinput.toInt();
+    qDebug() << pic->tacktAdresseBit << "tacktbit nachher";
+}

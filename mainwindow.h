@@ -45,6 +45,16 @@ private slots:
     void loadFile();
     void on_pushButton_clicked();
 
+    void on_Quarzfrequenz_returnPressed();
+
+    void on_taktstate_pressed();
+
+    void on_taktbank_returnPressed();
+
+    void on_taktregister_returnPressed();
+
+    void on_taktbit_returnPressed();
+
 signals:
     void aboutToQuit();
 
