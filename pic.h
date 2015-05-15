@@ -60,7 +60,7 @@ public:
     //externer Tackt
     bool tackt = true;
     int tacktAdresseBank = 0;
-    int tacktAdresseZelle = 0x06;
+    int tacktAdresseZelle = 0;
     int tacktAdresseBit = 0;
     int tacktflankealt = 0;
 
@@ -91,11 +91,14 @@ public:
  void ResetLaufZeit();
  void IncrementCycles();
 
+
+
  void setTmr0();
  void Tmr0Timer();
  void Tmr0Counter();
  void Tmr0overflow();
  void Tmr0Increment();
+
 
  void ChkIndirect();
  void SetBank();

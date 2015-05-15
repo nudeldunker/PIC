@@ -52,34 +52,34 @@ void PIC::decodeCmd(int pc)
 {
 //    {
 
-        qDebug() << "CMDLIST" <<m_CmdList[pc];
-        qDebug() << pc << "PC";
+        //qDebug() << "CMDLIST" <<m_CmdList[pc];
+        //qDebug() << pc << "PC";
         k_long=m_CmdList[pc] & 0x7FF;
-        qDebug() << k_long << "klong";
+        //qDebug() << k_long << "klong";
         k=m_CmdList[pc] & 0xFF;
-        qDebug() << k << "k";
+        //qDebug() << k << "k";
         f=m_CmdList[pc] & 0x7F;
-        qDebug() << f <<"f";
+        //qDebug() << f <<"f";
         d=m_CmdList[pc] & 0x80;
         d=(d>>7); //Test
         l=d;
         b=m_CmdList[pc] & 0x380;
         b = b / 128;
-        qDebug() << b << "b";
+        //qDebug() << b << "b";
         qDebug() << PreScalerWert << "PreScalerWert";
 
         PIC::getPreScaler();
         PIC::SetBank();
         PIC::ChkIndirect();
-        PIC::setTmr0();
+
 
 
      int ByteCmd=m_CmdList[pc] & 0x3F00;
-     qDebug() << ByteCmd << "byteCMD";
+     //qDebug() << ByteCmd << "byteCMD";
      int BitCmd=m_CmdList[pc] & 0x3C00;
-     qDebug() << BitCmd << "BitCMD";
+     //qDebug() << BitCmd << "BitCMD";
      int ShrtCmd=m_CmdList[pc] & 0x3800;
-     qDebug() << ShrtCmd << "ShrtCMD";
+     //qDebug() << ShrtCmd << "ShrtCMD";
 
 
      if(ByteCmd == 0x0700 )
@@ -165,8 +165,9 @@ void PIC::decodeCmd(int pc)
     //zählt nach jeder Befehlsabarbeitung einen Programmzyklus hoch, bizyklische Befehle zählen zusätzlich während des Befehls rauf
      PIC::ExtClock();
      PIC::IncrementCycles();
+     PIC::setTmr0();
      PIC::LaufZeit();
-     PreScalerCounter++;
+     //PreScalerCounter++;
      PIC::SyncSpecialReg();
      PIC::RBPeakAnalyzer();
      PIC::InterruptAnalyzer();
@@ -992,12 +993,14 @@ void PIC::setTmr0(){
 
     if(T0CS == 0x20){
         qDebug() << "Tmr0 Counter";
-        Tmr0Counter();
+        PIC::Tmr0Counter();
+
+
     }else if(T0CS == 0x00){
         qDebug() << "Tmr0 Timer";
-        Tmr0Timer();
+        PIC::Tmr0Timer();
     }
-
+    PIC::Tmr0overflow();
     qDebug() << regModel->reg[0][TMR0] << "Timer0";
 }
 
@@ -1011,7 +1014,7 @@ void PIC::Tmr0Timer(){
     else{
     PIC::Tmr0Increment();
     }
-    PIC::Tmr0overflow();
+
 
 }
 
@@ -1020,90 +1023,63 @@ void PIC::Tmr0Timer(){
 
 
 void PIC::Tmr0Counter(){
-    int AktuelleFlanke = regModel->reg[0][0x05] & 0x10;
-    int Tmr0SE = regModel->reg[1][OPTION] & 0x10;
+    int ref = 0;
+    //aktuelle Flanke maskieren
+    int AktuelleFlanke = regModel->reg[0][0x05];
+    AktuelleFlanke = AktuelleFlanke & 0x10;
+    qDebug() << AktuelleFlanke << "Aktuelle Flanke Tmr0 Counter";
+    //triggernde Flanke maskieren
+    int Tmr0SE = regModel->reg[1][OPTION];
+    Tmr0SE = Tmr0SE & 0x10;
+    qDebug() << Tmr0SE << "Tmr0SE";
 
-    //1:1
-    if(PreScalerTmr0 == false){
-    qDebug() << "Tmr0 Counter 1:1";
-    //steigende Flanke 0->1
-
-        if(Tmr0SE == 0x00){
-            if(LetzteFlanke == 0){
-                qDebug() << "Tmr0 Counter letzte Flanke =0";
-            if(AktuelleFlanke != LetzteFlanke){
-                qDebug() << "Tmr0 Counter letzte Flanke =0 Aktuell != Alt";
-                regModel->reg[0][TMR0] = regModel->reg[0][TMR0]++;
-            }
-
-            }
-        }
-
-
-    //fallende Flanke
-   if(Tmr0SE == 0x10){
-
-    if(LetzteFlanke == 1){
-    qDebug() << "Tmr0 Counter letzte Flanke =1";
-       if(AktuelleFlanke != LetzteFlanke){
-           qDebug() << "Tmr0 Counter letzte Flanke =1 Aktuell != Alt";
-           regModel->reg[0][TMR0] = regModel->reg[0][TMR0]++;
-       }
+    //triggernde Flanke als Referenz setzen
+    if(Tmr0SE == 0x10){
+        ref = 0x10;
     }
+    else{
+        ref = 0x00;
+    }
+    qDebug() << ref << "Tmr0 flanken trigger";
 
-    /*LetzteFlanke = AktuelleFlanke;
-    PIC::Tmr0overflow();*/
-
-   }
-   }
-
-    //1:PreScalerWert
-    if(PreScalerTmr0 == true){
-        qDebug() << "Tmr0 Counter PreScaler";
-    //steigende Flanke 0->1
-        if(Tmr0SE == 0x00){
-            if(LetzteFlanke == 0){
-                qDebug() << "Tmr0 Counter PreScaler letzte Flanke =0";
-                if(AktuelleFlanke != LetzteFlanke){
-                    qDebug() << "Tmr0 Counter letzte Flanke =0 != Aktuell";
-                    PIC::Tmr0Increment();
-                }
-
+    if(LetzteFlanke == ref){
+        if(AktuelleFlanke != LetzteFlanke){
+            if(PreScalerTmr0 == false){
+                //falls PreScaler an WDT angeschlossen ist wird bei Tmr0 1:1 hochgezählt
+                int temp = regModel->reg[0][TMR0];
+                temp++;
+                regModel->reg[0][TMR0] = temp;
             }
-        }
-
-
-    //fallende Flanke
-   if(Tmr0SE == 0x10){
-
-        if(LetzteFlanke == 1){
-            //qDebug() << "Tmr0 Counter PreScaler letzte Flanke =1";
-            if(AktuelleFlanke != LetzteFlanke){
-                //qDebug() << "Tmr0 Counter PreScaler letzte Flanke =1 != Aktuell";
+            if(PreScalerTmr0 == true){
                 PIC::Tmr0Increment();
             }
         }
-   }
-
-
-   }
-
+            else{qDebug()<<"Kein Flankenwechsel erkannt";
+            }
+    }
     LetzteFlanke = AktuelleFlanke;
-    //PIC::Tmr0overflow();
 }
 
+
+
 void PIC::Tmr0Increment(){
-    if(PreScalerCounter == ((PreScalerWert*2)-1)){
-        //qDebug() << PreScalerCounter << "PreScalerCounter";
+    qDebug() << "Tmr0Increment";
+    qDebug() << PreScalerCounter << "PreScalerCounter";
+    if(PreScalerCounter >= ((PreScalerWert*2)-1)){
+        qDebug() << PreScalerCounter << "PreScalerCounter";
         int tempadd = regModel->reg[0][TMR0];
         tempadd++;
         regModel->reg[0][TMR0] = tempadd;
+
         PreScalerCounter = 0x00;
-        //qDebug() << PreScalerCounter << "PreScalerCounter 0x00";
+        qDebug() << PreScalerCounter << "PreScalerCounter 0x00";
     }
+    PreScalerCounter++;
+    qDebug() << PreScalerCounter << "PreScalerCounter++";
 }
 
 void PIC::Tmr0overflow(){
+    qDebug() << "Tmr0Overflow";
     if(regModel->reg[0][TMR0] >= 0x100){
         regModel->reg[0][TMR0] = regModel->reg[0][TMR0] - 256;
         regModel->reg[bank][INTCON] = regModel->reg[bank][INTCON] | 0x04;
@@ -1197,7 +1173,7 @@ void PIC::RBPeakAnalyzer(){
     peakMode = peakMode & 0x40;
     int refPeak = 0;
     int portB = regModel->reg[0][PORTB];
-    qDebug() << peakMode << "PeakMode / 16=steigend / 0=fallend";
+    //qDebug() << peakMode << "PeakMode / 16=steigend / 0=fallend";
 
     //soll auf steigende oder fallende Flanke reagiert werden?
     if(peakMode == 0x40){
@@ -1213,7 +1189,7 @@ void PIC::RBPeakAnalyzer(){
         ref = ref ^ 0xFF;
     }
     RBAktuell[i] = portB & ref;
-    qDebug() << RBAktuell[i] << "RBAKTUELL" << portB<<"PortB";
+    //qDebug() << RBAktuell[i] << "RBAKTUELL" << portB<<"PortB";
     }
 
     for(int i=0; i<=7; i++){
@@ -1221,7 +1197,7 @@ void PIC::RBPeakAnalyzer(){
     if(RBAlt[i] == refPeak){
 
                 //Bits auf Änderung Prüfen
-                qDebug() << RBAlt[0] << RBAktuell[0] << "Bitänderungen";
+                //qDebug() << RBAlt[0] << RBAktuell[0] << "Bitänderungen";
                 if(RBAlt[0] != RBAktuell[0]){
                     SetINTFFlag();
                 }
@@ -1237,8 +1213,8 @@ void PIC::RBPeakAnalyzer(){
     //Aktueller Wert in Alten Wert für nächsten Flankentest schreiben
     for(int i=0; i<=7; i++){
         RBAlt[i] = RBAktuell[i];
-        qDebug() << RBAlt[i] << "RBAlt" << i;
-        qDebug() << RBAktuell[i] << "RBAktuell" << i;
+        //qDebug() << RBAlt[i] << "RBAlt" << i;
+        //qDebug() << RBAktuell[i] << "RBAktuell" << i;
 
         }
 }
@@ -1276,4 +1252,4 @@ void PIC::ExtClock(){
             }
         }
 
-    }
+}
