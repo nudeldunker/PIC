@@ -79,6 +79,8 @@ void PIC::decodeCmd(int pc)
         b=m_CmdList[pc] & 0x380;
         qDebug() << b << "b";
 
+        CheckIndirect();
+
      int ByteCmd=m_CmdList[pc] & 0x3F00;
      //qDebug() << ByteCmd << "byteCMD";
      int BitCmd=m_CmdList[pc] & 0x3C00;
@@ -162,11 +164,10 @@ void PIC::decodeCmd(int pc)
         MOVLW();
     else if((ShrtCmd) == 0x3800)
         IORLW();
-//}
 
 }
 
-
+//Befehle
 
 void PIC::ADDWF(){
     qDebug() << "ADDWF";
@@ -535,7 +536,6 @@ void PIC::BCF(){
 
 }
 
-
 void PIC::BSF(){
     qDebug() << "BSF";
 
@@ -751,6 +751,7 @@ void PIC::PC()
     }
 
     regModel->dataChanged(regModel->index(0,0, QModelIndex()), regModel->index(0,0, QModelIndex()));
+    PIC::cycles++;
 }
 
 void PIC::teststackptr(){
@@ -790,13 +791,12 @@ void PIC::finish()
     emit finished();
 }
 
-void PIC::ChkZBit(int){
-
-
-        if(erg==0)
-            ZBit(true);
-        else ZBit(false);
-
+void PIC::ChkZBit(int)
+{
+    if(erg==0){
+    ZBit(true);
+    }
+    else {ZBit(false);}
 }
 
 void PIC::pushstack(){
@@ -833,6 +833,21 @@ void PIC::popstack(){
     qDebug() << stackpointer << "stackpointer";
 }
 
+
+//Umlenken bei indirekter Adressierung
+void PIC::CheckIndirect()
+{
+//Bank-0
+if(f == 0x0){
+    f = regModel->reg[0][FSR];
+}
+//Bank-1
+if(f == 0x80){
+    f = regModel->reg[1][FSR];
+}
+}
+
+
 //PSA - PreScaler Beziehungen
 void PIC::SetPSA(){
     //Prescaler hängt am Watchdog
@@ -843,7 +858,7 @@ void PIC::SetPSA(){
 void PIC::ClearPSA(){
     //Prescaler hängt an TMR0
     int einercomp = 0x4;
-    einercomp = ~ einercomp;
+    einercomp = einercomp ^ 0xFF;
     regModel->reg[1][OPTION] = regModel->reg[1][OPTION] & einercomp;
 }
 
@@ -855,7 +870,7 @@ void PIC::ClearPSA(){
 void PIC::SetPS000(){
     //TMR0/1:2 WD/1:1
     int einercomp = 0x7;
-    einercomp = ~ einercomp;
+    einercomp = einercomp ^ 0xFF;
     regModel->reg[1][OPTION] = regModel->reg[1][OPTION] & einercomp;
 }
 

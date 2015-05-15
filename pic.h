@@ -44,7 +44,7 @@ public:
     bool stop=true;
     bool singleStep=false;
 
-
+ void CheckIndirect();
 
 
  void decodeCmd();
