@@ -2,6 +2,7 @@
 #define ADRESSEN_H
 
 
+#define INDIRECT 0x00
 #define TMR0 0x01
 #define PCL 0x02
 #define STATUS 0x03

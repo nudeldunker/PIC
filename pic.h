@@ -4,6 +4,7 @@
 #include <QObject>
 #include "regmodel.h"
 #include "regmodeldlgt.h"
+#include "strings.h"
 
 typedef QVector<int> regs;
 
@@ -22,6 +23,7 @@ public:
     int b=0;
 
 
+
     int bank=0;
 
     int W=0;
@@ -34,18 +36,77 @@ public:
     RegModel *regModel;
     RegModelDlgt *regModelDlgt;
 
-    //für CALL
+
+
+    int cycles = 0; //hier werden die durclaufenen Programmzyklen gezählt
+
+    //Prescaler
+    int PreScalerWert = 0;
+    int PreScalerCounter = 0;
+    bool PreScalerTmr0 = false;
+
+    //Tmr0
+    int LetzteFlanke = 0;
+
+    //CALL / RETURN
     int stackpointer = 0;
     int stack[7];
+
+    //Laufzeit
+    double QuarzFreqzenz = 1000000;
+    double Laufzeit = 0;
+    int LaufzeitCounter = 0;
+
+    //externer Tackt
+    bool tackt = true;
+    int tacktAdresseBank = 0;
+    int tacktAdresseZelle = 0;
+    int tacktAdresseBit = 0;
+    int tacktflankealt = 0;
+
+    //RBBuffer
+    int RBAlt[8] = {0,0,0,0,0,0,0,0};
+
+    int RBAktuell[8] = {0,0,0,0,0,0,0,0};
+
+    bool stop=true;
+    bool singleStep=false;
+
 
  void ChkZBit(int);
  void ChkDCBit(int);
  int ChkCBit(int);
-    bool stop=true;
-    bool singleStep=false;
+
 
  void CheckIndirect();
 
+ void InterruptAnalyzer();
+ void RunInterrupt();
+ void RBPeakAnalyzer();
+ void SetRBInterruptFlag();
+ void SetINTFFlag();
+
+ void ExtClock();
+
+ void getPreScaler();
+
+ void LaufZeit();
+ void ResetLaufZeit();
+ void IncrementCycles();
+
+
+
+ void setTmr0();
+ void Tmr0Timer();
+ void Tmr0Counter();
+ void Tmr0overflow();
+ void Tmr0Increment();
+
+
+ void ChkIndirect();
+ void SetBank();
+ void SetRegister();
+ void SyncSpecialReg();
 
  void decodeCmd();
  void ADDWF();
@@ -91,20 +152,12 @@ public:
  void DCBit(bool set);
  void CBit(bool set);
 
- void teststackptr();
  void pushstack();
  void popstack();
 
  void SetPSA();
  void ClearPSA();
- void SetPS000();
- void SetPS001();
- void SetPS010();
- void SetPS011();
- void SetPS100();
- void SetPS101();
- void SetPS110();
- void SetPS111();
+
 
 
 
