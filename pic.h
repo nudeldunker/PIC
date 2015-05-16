@@ -50,7 +50,7 @@ public:
 
     //CALL / RETURN
     int stackpointer = 0;
-    int stack[7];
+    int stack[7] = {0,0,0,0,0,0,0};
 
     //Laufzeit
     double QuarzFreqzenz = 1000000;
@@ -107,6 +107,8 @@ public:
  void SetBank();
  void SetRegister();
  void SyncSpecialReg();
+
+ void SyncGuiReg();
 
  void decodeCmd();
  void ADDWF();
