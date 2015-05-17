@@ -308,10 +308,10 @@ void PIC::COMF(){
     qDebug() << "COMF";
 
     erg = regModel->reg[bank][f];
-    ChkZBit(erg);
-    qDebug() << erg;
+
+    qDebug() << erg << "erg vorher";
     erg = erg ^ 0xff;
-    qDebug() << erg;
+    qDebug() << erg << "erg nachher";
 
     if(erg >=256){
         erg =  erg - 256;
@@ -440,14 +440,15 @@ void PIC::INCFSZ(){
 void PIC::IORWF(){
     qDebug() << "IORWF";
 
-    qDebug() << regModel->reg[bank][f];
-    qDebug() << W;
-    erg=regModel->reg[bank][f]|W;
-    qDebug() << erg;
+    qDebug() << regModel->reg[bank][f]<< "f";
+    qDebug() << W << "w";
+    erg=regModel->reg[bank][f] | W;
+    qDebug() << erg << "erg";
 
     if(erg >=256){
         erg =  erg - 256;
     }
+    qDebug() << "erg" << erg;
     ChkZBit(erg);
 
     if(d==1){

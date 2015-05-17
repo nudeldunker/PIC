@@ -96,6 +96,7 @@ void MainWindow::updateReg()
     MainWindow::update_stack5();
     MainWindow::update_stack6();
     MainWindow::update_stack7();
+
 }
 
 void MainWindow::setView()
@@ -398,3 +399,5 @@ void MainWindow::update_stack7(){
         QString stacktemp = QString::number(pic->stack[7]);
         ui->Stack7->setText(stacktemp);
 }
+
+

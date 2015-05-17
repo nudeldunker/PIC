@@ -67,8 +67,6 @@ private slots:
     void update_stack5();
     void update_stack6();
     void update_stack7();
-
-
 signals:
     void aboutToQuit();
 
