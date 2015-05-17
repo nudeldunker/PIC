@@ -64,12 +64,12 @@ void PIC::decodeCmd(int pc)
 {
 //    {
 
-        //qDebug() << "CMDLIST" <<m_CmdList[pc];
+        qDebug() << "CMDLIST" <<m_CmdList[pc];
         //qDebug() << pc << "PC";
         k_long=m_CmdList[pc] & 0x7FF;
         //qDebug() << k_long << "klong";
         k=m_CmdList[pc] & 0xFF;
-        //qDebug() << k << "k";
+        qDebug() << k << "k";
         f=m_CmdList[pc] & 0x7F;
         //qDebug() << f <<"f";
         d=m_CmdList[pc] & 0x80;

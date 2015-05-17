@@ -180,14 +180,14 @@
    <widget class="QRadioButton" name="taktstate">
     <property name="geometry">
      <rect>
-      <x>560</x>
+      <x>550</x>
       <y>120</y>
-      <width>102</width>
+      <width>121</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
-     <string>RadioButton</string>
+     <string>Taktgenerator</string>
     </property>
    </widget>
    <widget class="QLabel" name="LaufzeitDisplay">
