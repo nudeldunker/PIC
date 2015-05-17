@@ -7,6 +7,7 @@
 #include <QTextStream>
 #include <QDebug>
 #include <QDesktopServices>
+#include <QtSerialPort/QSerialPortInfo>
 
 
 
@@ -50,6 +51,11 @@ MainWindow::MainWindow(QWidget *parent) :
     codeModel->setObjectName("codeModel");
 
     connect(ui->actionHilfe_ffnen, SIGNAL(triggered()), this, SLOT(openHelp()));
+
+    getSerialPorts();
+    connect(ui->pushButtonStartHDWCom, SIGNAL(clicked(bool)), this, SLOT(startHDWCom()));
+
+
 }
 
 
@@ -435,6 +441,38 @@ void MainWindow::openHelp()
     QString helpfile=QDir::currentPath().append("/hilfe.pdf");
     //QString helpfile=QFileDialog::getOpenFileName(this, "Hilfe öffnen", QDir::currentPath(), "PDF-Dateien (*.pdf)");
     QDesktopServices::openUrl(helpfile);
+}
+
+void MainWindow::getComPorts()
+{
+    foreach(const QSerialPortInfo &info, QSerialPortInfo::availablePorts())
+    {
+        ui->comboBoxComPort->addItem(info.portName());
+    }
+}
+
+void MainWindow::startHDWCom()
+{
+    ui->pushButtonStartHDWCom->setText("Stop");
+    disconnect(ui->pushButtonStartHDWCom);
+    connect(ui->pushButtonStartHDWCom, SIGNAL(clicked()), this, SLOT(stopHDWCom()));
+
+    if(Com==0)
+    {
+        Com=new HDWCom(ui->comboBoxComPort->currentText());
+        Com->open();
+    }
+}
+
+void MainWindow::stopHDWCom()
+{
+    ui->pushButtonStartHDWCom->setText("Start");
+    disconnect(ui->pushButtonStartHDWCom);
+    connect(ui->pushButtonStartHDWCom, SIGNAL(clicked()), this, SLOT(startHDWCom()));
+
+    Com->close();
+    delete Com;
+    Com=0;
 }
 
 
