@@ -11,6 +11,10 @@ public:
 
     QSerialPort * port=0;
     QString portName=0;
+    bool close();
+    void encode();
+    void decode();
+    bool open();
 };
 
 #endif // HDWCOM_H

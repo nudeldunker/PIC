@@ -1,4 +1,6 @@
 #include "hdwcom.h"
+#include <QDebug>
+#include <QSerialPortInfo>
 
 HDWCom::HDWCom(QString portName)
 {
@@ -30,6 +32,7 @@ bool HDWCom::open()
 
         if(port->error()!=QSerialPort::NoError)
         {
+            qDebug()<<port->error();
             delete port;
             return false;
         }

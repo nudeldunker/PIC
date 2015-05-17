@@ -52,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->actionHilfe_ffnen, SIGNAL(triggered()), this, SLOT(openHelp()));
 
-    getSerialPorts();
+    getComPorts();
     connect(ui->pushButtonStartHDWCom, SIGNAL(clicked(bool)), this, SLOT(startHDWCom()));
 
 
@@ -453,14 +453,20 @@ void MainWindow::getComPorts()
 
 void MainWindow::startHDWCom()
 {
-    ui->pushButtonStartHDWCom->setText("Stop");
-    disconnect(ui->pushButtonStartHDWCom);
-    connect(ui->pushButtonStartHDWCom, SIGNAL(clicked()), this, SLOT(stopHDWCom()));
 
     if(Com==0)
     {
         Com=new HDWCom(ui->comboBoxComPort->currentText());
-        Com->open();
+        if(! Com->open())
+        {
+            qDebug()<< "Port kann nicht geöffnet werden";
+            delete Com;
+        }
+        else{
+            ui->pushButtonStartHDWCom->setText("Stop");
+            disconnect(ui->pushButtonStartHDWCom);
+            connect(ui->pushButtonStartHDWCom, SIGNAL(clicked()), this, SLOT(stopHDWCom()));
+        }
     }
 }
 
