@@ -50,7 +50,7 @@ public:
 
     //CALL / RETURN
     int stackpointer = 0;
-    int stack[7];
+    int stack[7] = {0,0,0,0,0,0,0};
 
     //Laufzeit
     double QuarzFreqzenz = 1000000;
@@ -58,7 +58,7 @@ public:
     int LaufzeitCounter = 0;
 
     //externer Tackt
-    bool tackt = true;
+    bool tackt = false;
     int tacktAdresseBank = 0;
     int tacktAdresseZelle = 0;
     int tacktAdresseBit = 0;
@@ -107,6 +107,8 @@ public:
  void SetBank();
  void SetRegister();
  void SyncSpecialReg();
+
+ void SyncGuiReg();
 
  void decodeCmd();
  void ADDWF();

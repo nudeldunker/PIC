@@ -81,6 +81,21 @@ void MainWindow::updateReg()
 
     ui->codeView->selectRow(codeModel->findPCIdx(pic->getPC()));
     i++;
+
+    //Laufzeitanzeige
+    /*QString LaufZeitAnzeige = QString::number(pic->Laufzeit);
+    ui->LaufzeitDisplay->setText("LZ: " + LaufZeitAnzeige);*/
+    MainWindow::update_laufzeit();
+
+    //Stackanzeige
+    MainWindow::update_stack0();
+    MainWindow::update_stack1();
+    MainWindow::update_stack2();
+    MainWindow::update_stack3();
+    MainWindow::update_stack4();
+    MainWindow::update_stack5();
+    MainWindow::update_stack6();
+    MainWindow::update_stack7();
 }
 
 void MainWindow::setView()
@@ -279,4 +294,107 @@ void MainWindow::closeEvent(QCloseEvent *bar)
 {
   emit aboutToQuit();
     bar->accept();
+}
+
+void MainWindow::on_Quarzfrequenz_returnPressed()
+{
+    qDebug() << pic->QuarzFreqzenz << "QuarzFrequenz vorher";
+
+    QString qfinput = ui->Quarzfrequenz->text();
+    pic->QuarzFreqzenz = qfinput.toDouble();
+    qDebug() << pic->QuarzFreqzenz << "QuarzFrequenz nachher";
+}
+
+void MainWindow::on_taktstate_pressed()
+{
+    if(pic->tackt == false){
+        qDebug() << pic->tackt << "takt an";
+        pic->tackt =true;}
+    else if(pic->tackt == true){
+        qDebug() << pic->tackt << "takt aus";
+        pic->tackt =false;}
+    }
+
+void MainWindow::on_taktbank_returnPressed()
+{
+    qDebug() << pic->tacktAdresseBank << "tacktAdresseBank vorher";
+    QString qfinput = ui->taktbank->text();
+    pic->tacktAdresseBank = qfinput.toInt();
+    qDebug() << pic->tacktAdresseBank << "tacktAdresseBank nachher";
+}
+
+void MainWindow::on_taktregister_returnPressed()
+{
+    qDebug() << pic->tacktAdresseZelle << "taktregister vorher";
+    QString qfinput = ui->taktregister->text();
+    pic->tacktAdresseZelle = qfinput.toInt();
+    qDebug() << pic->tacktAdresseZelle << "tacktAdresseZelle nachher";
+}
+
+void MainWindow::on_taktbit_returnPressed()
+{
+    qDebug() << pic->tacktAdresseBit << "taktbit vorher";
+    QString qfinput = ui->taktbit->text();
+    pic->tacktAdresseBit = qfinput.toInt();
+    qDebug() << pic->tacktAdresseBit << "tacktbit nachher";
+}
+
+void MainWindow::on_inputtest_returnPressed()
+{
+    QString testinput = ui->inputtest->text();
+    pic->stack[0] = testinput.toInt();
+    pic->stack[1] = testinput.toInt();
+    pic->stack[2] = testinput.toInt();
+    pic->stack[3] = testinput.toInt();
+    pic->stack[4] = testinput.toInt();
+    pic->stack[5] = testinput.toInt();
+    pic->stack[6] = testinput.toInt();
+    pic->stack[7] = testinput.toInt();
+}
+
+void MainWindow::update_laufzeit(){
+    QString LaufZeitAnzeige = QString::number(pic->Laufzeit);
+    ui->LaufzeitDisplay->setText("LZ: " + LaufZeitAnzeige);
+}
+
+//Stackupdates noch unsauber aber funktioniert. wird iwann verbessert
+
+void MainWindow::update_stack0(){
+        QString stacktemp = QString::number(pic->stack[0]);
+        ui->Stack0->setText(stacktemp);
+}
+
+void MainWindow::update_stack1(){
+        QString stacktemp = QString::number(pic->stack[1]);
+        ui->Stack1->setText(stacktemp);
+}
+
+void MainWindow::update_stack2(){
+        QString stacktemp = QString::number(pic->stack[2]);
+        ui->Stack2->setText(stacktemp);
+}
+
+void MainWindow::update_stack3(){
+        QString stacktemp = QString::number(pic->stack[3]);
+        ui->Stack3->setText(stacktemp);
+}
+
+void MainWindow::update_stack4(){
+        QString stacktemp = QString::number(pic->stack[4]);
+        ui->Stack4->setText(stacktemp);
+}
+
+void MainWindow::update_stack5(){
+        QString stacktemp = QString::number(pic->stack[5]);
+        ui->Stack5->setText(stacktemp);
+}
+
+void MainWindow::update_stack6(){
+        QString stacktemp = QString::number(pic->stack[6]);
+        ui->Stack6->setText(stacktemp);
+}
+
+void MainWindow::update_stack7(){
+        QString stacktemp = QString::number(pic->stack[7]);
+        ui->Stack7->setText(stacktemp);
 }
