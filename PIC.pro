@@ -12,7 +12,8 @@ HEADERS += \
     regmodel.h \
     regmodeldlgt.h \
     adressen.h \
-    codemodel.h
+    codemodel.h \
+    portmodel.h
 
 SOURCES += \
     mainwindow.cpp \
@@ -20,4 +21,5 @@ SOURCES += \
     pic.cpp \
     regmodel.cpp \
     regmodeldlgt.cpp \
-    codemodel.cpp
+    codemodel.cpp \
+    portmodel.cpp

@@ -320,6 +320,52 @@
      </rect>
     </property>
    </widget>
+   <widget class="QTableView" name="tableViewPortA">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>360</y>
+      <width>301</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QTableView" name="tableViewPortB">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>460</y>
+      <width>301</width>
+      <height>71</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelPortB">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>440</y>
+      <width>47</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Port B</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelPortA">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>340</y>
+      <width>47</width>
+      <height>13</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Port A</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -327,7 +373,7 @@
      <x>0</x>
      <y>0</y>
      <width>1178</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -336,12 +382,24 @@
     </property>
     <addaction name="actionLaden"/>
    </widget>
+   <widget class="QMenu" name="menuHilfe">
+    <property name="title">
+     <string>Hilfe</string>
+    </property>
+    <addaction name="actionHilfe_ffnen"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuHilfe"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionLaden">
    <property name="text">
     <string>Laden</string>
+   </property>
+  </action>
+  <action name="actionHilfe_ffnen">
+   <property name="text">
+    <string>Hilfe öffnen</string>
    </property>
   </action>
  </widget>
