@@ -84,6 +84,8 @@ private slots:
     void update_stack7();
     void on_resetLaufzeit_clicked();
 
+    void on_resetLZ_clicked();
+
 signals:
     void aboutToQuit();
 

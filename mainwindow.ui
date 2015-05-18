@@ -320,19 +320,6 @@
      </rect>
     </property>
    </widget>
-<<<<<<< HEAD
-   <widget class="QPushButton" name="resetLaufzeit">
-    <property name="geometry">
-     <rect>
-      <x>940</x>
-      <y>40</y>
-      <width>115</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Laufzeit reset</string>
-=======
    <widget class="QTableView" name="tableViewPortA">
     <property name="geometry">
      <rect>
@@ -377,7 +364,6 @@
     </property>
     <property name="text">
      <string>Port A</string>
->>>>>>> origin/master
     </property>
    </widget>
    <widget class="QGroupBox" name="groupBoxHDWCom">
@@ -405,13 +391,13 @@
       <string>Start</string>
      </property>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>21</x>
        <y>31</y>
-       <width>124</width>
-       <height>22</height>
+       <width>173</width>
+       <height>26</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
@@ -428,6 +414,19 @@
      </layout>
     </widget>
    </widget>
+   <widget class="QPushButton" name="resetLZ">
+    <property name="geometry">
+     <rect>
+      <x>930</x>
+      <y>40</y>
+      <width>115</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Laufzeit reset</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -435,7 +434,7 @@
      <x>0</x>
      <y>0</y>
      <width>1178</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

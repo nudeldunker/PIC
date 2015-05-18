@@ -398,3 +398,8 @@ void MainWindow::on_resetLaufzeit_clicked()
 {
     pic->Laufzeit = 0;
 }
+
+void MainWindow::on_resetLZ_clicked()
+{
+    pic->Laufzeit = 0;
+}
