@@ -9,7 +9,6 @@
 #include "regmodel.h"
 #include "regmodeldlgt.h"
 #include "codemodel.h"
-#include "portmodel.h"
 
 
 namespace Ui {
@@ -33,9 +32,6 @@ public:
     RegModel *regModel;
     RegModelDlgt *regModelDlgt;
 
-    PortModel *portA;
-    PortModel *portB;
-
     CodeModel *codeModel;
 
     QTimer * UpdateRegTimer;
@@ -45,9 +41,6 @@ public slots:
     void updateReg();
     void start();
     void singleStep();
-    void setPortA(const QModelIndex &index);
-    void setPortB(const QModelIndex &index);
-    void openHelp();
 private slots:
     void loadFile();
     void on_pushButton_clicked();
@@ -74,8 +67,6 @@ private slots:
     void update_stack5();
     void update_stack6();
     void update_stack7();
-    void on_resetLaufzeit_clicked();
-
 signals:
     void aboutToQuit();
 

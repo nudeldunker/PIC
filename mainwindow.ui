@@ -193,7 +193,7 @@
    <widget class="QLabel" name="LaufzeitDisplay">
     <property name="geometry">
      <rect>
-      <x>800</x>
+      <x>840</x>
       <y>50</y>
       <width>131</width>
       <height>16</height>
@@ -216,7 +216,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Stack-0</string>
+     <string>TextLabel</string>
     </property>
    </widget>
    <widget class="QLabel" name="Stack1">
@@ -229,7 +229,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Stack-1</string>
+     <string>TextLabel</string>
     </property>
    </widget>
    <widget class="QLabel" name="Stack2">
@@ -242,7 +242,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Stack-2</string>
+     <string>TextLabel</string>
     </property>
    </widget>
    <widget class="QLabel" name="Stack3">
@@ -255,7 +255,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Stack-3</string>
+     <string>TextLabel</string>
     </property>
    </widget>
    <widget class="QLabel" name="Stack4">
@@ -268,7 +268,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Stack-4</string>
+     <string>TextLabel</string>
     </property>
    </widget>
    <widget class="QLabel" name="Stack5">
@@ -281,7 +281,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Stack-5</string>
+     <string>TextLabel</string>
     </property>
    </widget>
    <widget class="QLabel" name="Stack6">
@@ -294,7 +294,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Stack-6</string>
+     <string>TextLabel</string>
     </property>
    </widget>
    <widget class="QLabel" name="Stack7">
@@ -307,7 +307,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Stack-7</string>
+     <string>TextLabel</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="inputtest">
@@ -320,63 +320,6 @@
      </rect>
     </property>
    </widget>
-   <widget class="QPushButton" name="resetLaufzeit">
-    <property name="geometry">
-     <rect>
-      <x>940</x>
-      <y>40</y>
-      <width>115</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Laufzeit reset</string>
-   <widget class="QTableView" name="tableViewPortA">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>360</y>
-      <width>301</width>
-      <height>71</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QTableView" name="tableViewPortB">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>460</y>
-      <width>301</width>
-      <height>71</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelPortB">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>440</y>
-      <width>47</width>
-      <height>13</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Port B</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="labelPortA">
-    <property name="geometry">
-     <rect>
-      <x>40</x>
-      <y>340</y>
-      <width>47</width>
-      <height>13</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Port A</string>
-    </property>
-   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -384,7 +327,7 @@
      <x>0</x>
      <y>0</y>
      <width>1178</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -393,24 +336,12 @@
     </property>
     <addaction name="actionLaden"/>
    </widget>
-   <widget class="QMenu" name="menuHilfe">
-    <property name="title">
-     <string>Hilfe</string>
-    </property>
-    <addaction name="actionHilfe_ffnen"/>
-   </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuHilfe"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionLaden">
    <property name="text">
     <string>Laden</string>
-   </property>
-  </action>
-  <action name="actionHilfe_ffnen">
-   <property name="text">
-    <string>Hilfe öffnen</string>
    </property>
   </action>
  </widget>
