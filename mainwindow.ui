@@ -320,7 +320,6 @@
      </rect>
     </property>
    </widget>
-<<<<<<< HEAD
    <widget class="QPushButton" name="resetLaufzeit">
     <property name="geometry">
      <rect>
@@ -332,7 +331,6 @@
     </property>
     <property name="text">
      <string>Laufzeit reset</string>
-=======
    <widget class="QTableView" name="tableViewPortA">
     <property name="geometry">
      <rect>
@@ -377,7 +375,6 @@
     </property>
     <property name="text">
      <string>Port A</string>
->>>>>>> origin/master
     </property>
    </widget>
   </widget>

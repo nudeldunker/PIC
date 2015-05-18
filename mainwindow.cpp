@@ -437,6 +437,20 @@ void MainWindow::openHelp()
     QDesktopServices::openUrl(helpfile);
 }
 
+>>>>>>> origin/master
+
+void MainWindow::setPortB(const QModelIndex &index)
+{
+    portB->setData(index, 1, Qt::EditRole);
+}
+
+void MainWindow::openHelp()
+{
+    QString helpfile=QDir::currentPath().append("/hilfe.pdf");
+    //QString helpfile=QFileDialog::getOpenFileName(this, "Hilfe öffnen", QDir::currentPath(), "PDF-Dateien (*.pdf)");
+    QDesktopServices::openUrl(helpfile);
+}
+
 
 
 void MainWindow::on_resetLaufzeit_clicked()
