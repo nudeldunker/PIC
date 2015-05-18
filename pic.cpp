@@ -441,7 +441,8 @@ void PIC::INCFSZ(){
 void PIC::IORWF(){
     qDebug() << "IORWF";
 
-    qDebug() << regModel->reg[bank][f]<< "f";
+    qDebug() << f << "f";
+    qDebug() << regModel->reg[bank][f]<< "f inhalt";
     qDebug() << W << "w";
     erg=regModel->reg[bank][f] | W;
     qDebug() << erg << "erg";
@@ -452,9 +453,9 @@ void PIC::IORWF(){
     qDebug() << "erg" << erg;
     ChkZBit(erg);
 
-    if(d==1){
+    if(d==0){
     W = erg;}
-    else if(d==0){
+    else if(d==1){
     regModel->reg[bank][f] = erg;
     }
 
@@ -527,17 +528,26 @@ void PIC::RRF(){
 
     int carryset = regModel->reg[bank][f] & 0x80;
     int carryget = regModel->reg[bank][STATUS]&0x1;
+    int erg = regModel->reg[bank][f];
 
-    regModel->reg[bank][f] = regModel->reg[bank][f]/2;
+
+    erg = erg / 2;
     if(carryget==1){
-    regModel->reg[bank][f]=regModel->reg[bank][f]+128;
+    erg=erg+128;
     }else if(carryget==0){
-        regModel->reg[bank][f]=regModel->reg[bank][f];
+        erg = erg;
     }
     if(carryset==1){
     CBit(true);}
     else if(carryset==0){
     CBit(false);}
+
+    if(d == 0){
+        W = erg;
+    }else if(d == 1){
+        regModel->reg[bank][f] = erg;
+    }
+
     PC();
 
 }
