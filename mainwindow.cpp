@@ -56,6 +56,8 @@ MainWindow::MainWindow(QWidget *parent) :
     getComPorts();
     connect(ui->pushButtonStartHDWCom, SIGNAL(clicked(bool)), this, SLOT(startHDWCom()));
 
+    connect(ui->pushButtonReset, SIGNAL(clicked()), pic, SLOT(PowerOnReset()));
+
 
 }
 
@@ -110,6 +112,7 @@ void MainWindow::updateReg()
     if(Com!=0)
         connect(UpdateRegTimer, SIGNAL(timeout()), Com, SLOT(writeData())); //---------------------
 
+     updateLabels();
 }
 
 void MainWindow::setView()
@@ -147,7 +150,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::loadFile()
 {
-    static bool geladen=false;
+    static bool geladen=true;
 
     if(geladen)
     {
@@ -180,6 +183,7 @@ void MainWindow::loadFile()
 
                 //m_FileText.append(line);
             }
+            file.close();
         }
 
         geladen=true;
@@ -193,7 +197,11 @@ void MainWindow::loadFile()
 void MainWindow::reset()
 {
     pic->m_CmdList.clear();
+    pic->PowerOnReset();
    // m_FileText.clear();
+    delete codeModel;
+    codeModel=new CodeModel(this);
+    pic->setCodeModel(codeModel);
 }
 
 
@@ -402,4 +410,24 @@ void MainWindow::on_resetLaufzeit_clicked()
 void MainWindow::on_resetLZ_clicked()
 {
     pic->Laufzeit = 0;
+}
+
+void MainWindow::updateLabels()
+{
+    ui->labelW_2->setText(QString::number(pic->W,16).toUpper());
+    ui->labelFSR_2->setText(QString::number(pic->regModel->reg[0][FSR],16).toUpper());
+    ui->labelPCL_2->setText(QString::number(pic->regModel->reg[0][PCL],16).toUpper());
+    ui->labelPCLATH_2->setText(QString::number(pic->regModel->reg[0][PCLATH],16).toUpper());
+    ui->labelStatus_2->setText(QString::number(pic->regModel->reg[0][STATUS],16).toUpper());
+
+    ui->labelIRP_2->setText(QString::number((pic->regModel->reg[0][STATUS]&0x80)>>7,16).toUpper());
+    ui->labelRP1_2->setText(QString::number((pic->regModel->reg[0][STATUS]&0x40)>>6,16).toUpper());
+    ui->labelRP0_2->setText(QString::number((pic->regModel->reg[0][STATUS]&0x20)>>5,16).toUpper());
+    ui->labelT0_2->setText(QString::number((pic->regModel->reg[0][STATUS]&0x10)>>4,16).toUpper());
+    ui->labelPD_2->setText(QString::number((pic->regModel->reg[0][STATUS]&0x08)>>3,16).toUpper());
+    ui->labelZ_2->setText(QString::number((pic->regModel->reg[0][STATUS]&0x04)>>2,16).toUpper());
+    ui->labelDC_2->setText(QString::number((pic->regModel->reg[0][STATUS]&0x02)>>1,16).toUpper());
+    ui->labelC_2->setText(QString::number((pic->regModel->reg[0][STATUS]&0x01),16).toUpper());
+
+
 }

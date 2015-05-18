@@ -43,6 +43,7 @@ public:
     void getComPorts();
 
     HDWCom * Com=0;
+    void updateLabels();
 public slots:
     void setView();
     void stop();

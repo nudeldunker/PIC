@@ -177,6 +177,8 @@ public slots:
  void updateReg();
  void stopExec(bool stop);
  void decodeCmd(int pc);
+ void PowerOnReset();
+
 
 
  void finish();

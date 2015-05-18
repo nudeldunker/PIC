@@ -1300,3 +1300,35 @@ void PIC::setCodeModel(CodeModel *codeModel)
 {
     this->codeModel=codeModel;
 }
+
+void PIC::PowerOnReset()
+{
+    //Bank 0
+    regModel->reg[0][0]=0;
+    regModel->reg[0][1]=0; //x - unknown
+    regModel->reg[0][2]=0;
+    regModel->reg[0][3]=24; // 00011xxx
+    regModel->reg[0][4]=0; // x -unknown
+    regModel->reg[0][5]=0; // x -unknown
+    regModel->reg[0][6]=0; // x -unknown
+    regModel->reg[0][7]=0; // u -read as 0
+    regModel->reg[0][8]=0; // x -unknown
+    regModel->reg[0][9]=0; // x -unknown
+    regModel->reg[0][0xA]=0; //- read as 0
+    regModel->reg[0][0xB]=0;
+
+    //Bank 1
+    regModel->reg[1][0]=0;
+    regModel->reg[1][1]= 0xFF; //11111111
+    regModel->reg[1][2]=0;
+    regModel->reg[1][3]=24; // 00011xxx
+    regModel->reg[1][4]=0; // x -unknown
+    regModel->reg[1][5]=0x1F; // 00011111
+    regModel->reg[1][6]=0xFF; // 11111111
+    regModel->reg[1][7]=0; //read as 0
+    regModel->reg[1][8]=0; // ---0x0000
+    regModel->reg[1][9]=0; // - read as 0
+    regModel->reg[1][0xA]=0; //---0 0000
+    regModel->reg[1][0xB]=0; // 0000 000x
+
+}

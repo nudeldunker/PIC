@@ -51,7 +51,7 @@ QVariant RegModel::data(const QModelIndex &index, int role) const
 {
     if(index.isValid())
     {
-        if(role==Qt::DisplayRole)
+        if(role==Qt::DisplayRole || role==Qt::EditRole)
         {
             int bank;
             if(index.row()< BANK1)
