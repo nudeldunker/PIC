@@ -5,6 +5,7 @@
 #include "regmodel.h"
 #include "regmodeldlgt.h"
 #include "strings.h"
+#include "codemodel.h"
 
 typedef QVector<int> regs;
 
@@ -36,7 +37,7 @@ public:
     RegModel *regModel;
     RegModelDlgt *regModelDlgt;
 
-
+    CodeModel *codeModel=0;
 
     int cycles = 0; //hier werden die durchlaufenen Programmzyklen gezählt
 
@@ -164,6 +165,7 @@ public:
 
 
  int getPC();
+ void setCodeModel(CodeModel *codeModel);
 signals:
  void pointer();
  void finished();

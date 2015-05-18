@@ -10,6 +10,7 @@
 #include "regmodeldlgt.h"
 #include "codemodel.h"
 #include "portmodel.h"
+#include "hdwcom.h"
 
 
 namespace Ui {
@@ -39,6 +40,9 @@ public:
     CodeModel *codeModel;
 
     QTimer * UpdateRegTimer;
+    void getComPorts();
+
+    HDWCom * Com=0;
 public slots:
     void setView();
     void stop();
@@ -48,6 +52,10 @@ public slots:
     void setPortA(const QModelIndex &index);
     void setPortB(const QModelIndex &index);
     void openHelp();
+    void startHDWCom();
+    void stopHDWCom();
+    void setHDWData();
+    void setPorts();
 private slots:
     void loadFile();
     void on_pushButton_clicked();

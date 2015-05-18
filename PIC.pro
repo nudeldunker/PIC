@@ -1,6 +1,7 @@
 QT += \
     widgets \
-    core
+    core\
+    serialport
 
 
 FORMS += \
@@ -13,7 +14,8 @@ HEADERS += \
     regmodeldlgt.h \
     adressen.h \
     codemodel.h \
-    portmodel.h
+    portmodel.h \
+    hdwcom.h
 
 SOURCES += \
     mainwindow.cpp \
@@ -22,4 +24,5 @@ SOURCES += \
     regmodel.cpp \
     regmodeldlgt.cpp \
     codemodel.cpp \
-    portmodel.cpp
+    portmodel.cpp \
+    hdwcom.cpp
