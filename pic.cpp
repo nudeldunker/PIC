@@ -584,13 +584,19 @@ void PIC::SUBWF(){
 void PIC::SWAPF(){
     qDebug() << "SWAPF";
 
-
+    int erg = regModel->reg[bank][f];
     int leftnibble = regModel->reg[bank][f] & 0xF0;
     int rightnibble = regModel->reg[bank][f] & 0xF;
     leftnibble = leftnibble / 16;
     rightnibble = rightnibble * 16;
-    regModel->reg[bank][f] = regModel->reg[bank][f] | leftnibble;
-    regModel->reg[bank][f] = regModel->reg[bank][f] | rightnibble;
+    erg = erg | leftnibble;
+    erg = erg | rightnibble;
+
+    if(d == 0){
+        W = erg;}
+    else if(d == 1){
+        regModel->reg[bank][f] = erg;
+    }
 
     PC();
 
