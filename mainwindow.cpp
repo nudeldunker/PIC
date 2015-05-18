@@ -1,11 +1,12 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+
 #include <QFile>
 #include <QFileDialog>
 #include <QTextStream>
 #include <QDebug>
-
+#include <QDesktopServices>
 
 
 
@@ -47,6 +48,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     codeModel=new CodeModel(this);
     codeModel->setObjectName("codeModel");
+
+    connect(ui->actionHilfe_ffnen, SIGNAL(triggered()), this, SLOT(openHelp()));
 }
 
 
@@ -106,7 +109,24 @@ void MainWindow::setView()
     ui->regView->setModel(pic->regModel);
     ui->regView->setItemDelegate(pic->regModelDlgt);
     ui->regView->resizeColumnsToContents();
+    ui->regView->resizeRowsToContents();
     UpdateRegTimer->start(1000); //Einmal die Sekunde updaten
+
+    portA=new PortModel(this, PORTA, pic->regModel);
+    portB=new PortModel(this, PORTB, pic->regModel);
+
+    ui->tableViewPortA->setModel(portA);
+    ui->tableViewPortA->resizeColumnsToContents();
+    ui->tableViewPortA->resizeRowsToContents();
+    ui->tableViewPortB->setModel(portB);
+    ui->tableViewPortB->resizeColumnsToContents();
+    ui->tableViewPortB->resizeRowsToContents();
+
+    connect(ui->tableViewPortA, SIGNAL(clicked(QModelIndex)), this, SLOT(setPortA(QModelIndex)));
+    connect(ui->tableViewPortB, SIGNAL(clicked(QModelIndex)), this, SLOT(setPortB(QModelIndex)));
+
+
+
 
 }
 
@@ -400,4 +420,26 @@ void MainWindow::update_stack7(){
         ui->Stack7->setText(stacktemp);
 }
 
+void MainWindow::setPortA(const QModelIndex &index)
+{
+    portA->setData(index, 1, Qt::EditRole);
+}
 
+void MainWindow::setPortB(const QModelIndex &index)
+{
+    portB->setData(index, 1, Qt::EditRole);
+}
+
+void MainWindow::openHelp()
+{
+    QString helpfile=QDir::currentPath().append("/hilfe.pdf");
+    //QString helpfile=QFileDialog::getOpenFileName(this, "Hilfe öffnen", QDir::currentPath(), "PDF-Dateien (*.pdf)");
+    QDesktopServices::openUrl(helpfile);
+}
+
+
+
+void MainWindow::on_resetLaufzeit_clicked()
+{
+    pic->Laufzeit = 0;
+}
