@@ -54,6 +54,8 @@ public slots:
     void openHelp();
     void startHDWCom();
     void stopHDWCom();
+    void setHDWData();
+    void setPorts();
 private slots:
     void loadFile();
     void on_pushButton_clicked();

@@ -28,7 +28,7 @@ void PIC::runCode()
 {
     int pc=getPC();
 
-    CodeModel* codeModel=this->parent()->findChild<CodeModel *>(QString("codeModel"));
+    //CodeModel* codeModel=this->parent()->findChild<CodeModel *>(QString("codeModel"));
 
 
     while( pc< m_CmdList.size() && (!stop || singleStep) /* && codeModel->code[codeModel->findPCIdx(pc)][0].isEmpty()*/)
@@ -40,10 +40,11 @@ void PIC::runCode()
         if(singleStep==true) qDebug()<<"---------------------------------------------------------------------------Single Step";
 
         singleStep=false;
-
-        if(!codeModel->code[codeModel->findPCIdx(pc)][0].isEmpty())
+        int zeile=codeModel->findPCIdx(pc);
+        if(!codeModel->code[zeile][0].isEmpty())
         {
             qDebug() << "Breakpoint bei Programmzeile : "<<pc;
+            stop=true;
             emit breakPoint();
         }
     }
@@ -1277,4 +1278,9 @@ void PIC::ExtClock(){
             }
         }
 
+}
+
+void PIC::setCodeModel(CodeModel *codeModel)
+{
+    this->codeModel=codeModel;
 }
