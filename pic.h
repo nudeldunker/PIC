@@ -75,7 +75,7 @@ public:
 
 
  void ChkZBit(int);
- void ChkDCBit(int);
+ //void ChkDCBit(int);
  int ChkCBit(int);
 
 
@@ -166,6 +166,8 @@ public:
 
  int getPC();
  void setCodeModel(CodeModel *codeModel);
+ void ChkDCBitWF(int);
+ void ChkDCBitLW(int);
 signals:
  void pointer();
  void finished();

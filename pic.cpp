@@ -234,6 +234,10 @@ if(f == 0x03 | f == 0x83){
     erg = W+regModel->reg[bank][f];
     qDebug() << "Ergebnis" << erg;
 }
+ChkDCBitWF(erg);
+ChkCBit(erg);
+
+
 
 if(erg >=256)
 {
@@ -242,8 +246,7 @@ if(erg >=256)
     qDebug() << "ergebnis" << erg;
 }
 ChkZBit(erg);
-ChkCBit(erg);
-ChkDCBit(erg);
+
 qDebug() << d << "D";
 if(d==0)
 {
@@ -562,11 +565,12 @@ void PIC::SUBWF(){
 
     if(erg < 0){
         erg = 256 + erg;
-        CBit(true);
-    }else{CBit(false);}
+        CBit(!true);
+    }else{CBit(!false);}
 
 
-    ChkDCBit(erg);
+    ChkDCBitWF(erg);
+    //ChkCBit(erg);
     ChkZBit(erg);
 
     if(d==0){
@@ -685,10 +689,12 @@ void PIC::ADDLW(){
 
     }else{CBit(false);}
     qDebug() << erg << "erg";
-    W=erg;
-    ChkCBit(erg);
-    ChkDCBit(erg);
+
+    //ChkCBit(erg);
+    ChkDCBitLW(erg);
     ChkZBit(erg);
+
+    W=erg;
     PC();
 }
 
@@ -746,8 +752,8 @@ void PIC::SUBLW(){
     erg =k - W;
     if(erg < 0){
         erg = 256 + erg;
-        CBit(true);
-    }else{CBit(false);}
+        CBit(false);
+    }else{CBit(true);}
     W=erg;
     ChkZBit(erg);
     PC();
@@ -900,18 +906,32 @@ void PIC::PC()
 
 int PIC::ChkCBit(int){
 
-    if(erg >=256)
+    if(erg >=256 )
     {
         CBit(true);
-        return erg=0;
+        //return erg=0;
     }
     else CBit(false);
 
 }
 
-void PIC::ChkDCBit(int){
+void PIC::ChkDCBitLW(int){
 
-    if(regModel->reg[bank][W]<16 && erg>16)
+   // if(W<16 && erg>16)
+    int result = (W & 0x0F) + (k & 0x0F);//addiere jeweils die letzen 4 Bit
+            //return result != (result & 0x0F);
+    if(result > 0x0F)
+    {
+       DCBit(true);
+    }
+    else DCBit(false);
+}
+void PIC::ChkDCBitWF(int){
+
+   // if(W<16 && erg>16)
+    int result = (W & 0x0F) + (regModel->reg[bank][f] & 0x0F);//addiere jeweils die letzen 4 Bit
+            //return result != (result & 0x0F);
+    if(result > 0x0F)
     {
        DCBit(true);
     }
@@ -1330,5 +1350,10 @@ void PIC::PowerOnReset()
     regModel->reg[1][9]=0; // - read as 0
     regModel->reg[1][0xA]=0; //---0 0000
     regModel->reg[1][0xB]=0; // 0000 000x
+
+    for(int i=0; i<8; i++)
+    {
+        stack[i]=0;
+    }
 
 }

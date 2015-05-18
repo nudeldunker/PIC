@@ -69,6 +69,9 @@ void MainWindow::stop()
 
     ui->pushButton->setEnabled(true);
     ui->pushButtonStop->setEnabled(false);
+
+     ui->codeView->selectRow(codeModel->findPCIdx(pic->getPC()));
+
 }
 
 void MainWindow::start()
@@ -83,6 +86,9 @@ void MainWindow::singleStep()
 {
     pic->singleStep=true;
     pic->runCode();
+
+    ui->codeView->selectRow(codeModel->findPCIdx(pic->getPC()));
+
 }
 
 void MainWindow::updateReg()
@@ -91,7 +97,10 @@ void MainWindow::updateReg()
     pic->regModel->dataChanged(pic->regModel->index(0,0,QModelIndex()),pic->regModel->index(pic->regModel->rowCount()-1, pic->regModel->columnCount()-1,QModelIndex()));
     qDebug()<< "Update" << i;
 
+    if(!pic->stop )
     ui->codeView->selectRow(codeModel->findPCIdx(pic->getPC()));
+
+
     i++;
 
     //Laufzeitanzeige
@@ -123,7 +132,7 @@ void MainWindow::setView()
     ui->regView->setItemDelegate(pic->regModelDlgt);
     ui->regView->resizeColumnsToContents();
     ui->regView->resizeRowsToContents();
-    UpdateRegTimer->start(1000); //Einmal die Sekunde updaten
+    UpdateRegTimer->start(500); //Einmal die Sekunde updaten
 
     portA=new PortModel(this, PORTA, pic->regModel);
     portB=new PortModel(this, PORTB, pic->regModel);
@@ -202,6 +211,7 @@ void MainWindow::reset()
     delete codeModel;
     codeModel=new CodeModel(this);
     pic->setCodeModel(codeModel);
+
 }
 
 
