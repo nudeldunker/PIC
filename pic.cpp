@@ -430,7 +430,7 @@ void PIC::INCFSZ(){
      }
      else if(d==0){
      W=erg;
-     if(W==0){
+     if(erg==0){
      PC();}
      else{
      IncrementCycles();
